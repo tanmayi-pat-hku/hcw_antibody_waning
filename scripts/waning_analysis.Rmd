@@ -8,5 +8,11 @@ output: html_document
 library(librarian)
 shelf(dplyr) 
 shelf(tidyverse)
+shelf(readxl)
+```
+
+```{r}
+data <- read.csv("./data/data.csv")
+dict <- read_excel("./data/dict.xlsx")
 ```
 
