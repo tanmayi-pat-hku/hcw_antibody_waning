@@ -6,6 +6,7 @@ output: html_document
 ---
 ```{r}
 library(librarian)
-shelf(dplyr)
+shelf(dplyr) 
+shelf(tidyverse)
 ```
 
