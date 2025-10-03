@@ -9,10 +9,66 @@ library(librarian)
 shelf(dplyr) 
 shelf(tidyverse)
 shelf(readxl)
+shelf(tidyr)
 ```
 
 ```{r}
 data <- read.csv("./data/data.csv")
 dict <- read_excel("./data/dict.xlsx")
+```
+
+
+#Preliminary Count Analysis 
+```{r}
+dose_count <- data %>%
+  summarise(across(matches("^dose[1-8]_date$"), ~ sum(!is.na(.), na.rm = TRUE), .names = "count_{col}")) %>%
+  pivot_longer(everything(), names_to = "dose", values_to = "count")
+
+ggplot(dose_count, aes(x = dose, y = count)) +
+  geom_col(fill = "skyblue") +
+  geom_text(aes(label = count), vjust = -0.5, size = 3) +
+  scale_y_continuous(
+    limits = c(0, 2000),
+    breaks = seq(0, 2000, by = 250),
+    minor_breaks = seq(0, 2000, by = 50),
+    expand = c(0, 0.02)
+  ) +
+  labs(title = "Number of Participants by Dose", x = "Dose", y = "Count") +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(color = "gray80"),
+    panel.grid.minor.y = element_line(color = "gray92"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+#Brand Permutations Count 
+```{r}
+#Create another column with a string 
+data <- data %>%
+  mutate(brand_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, dose5_brand, sep = "-"))
+
+```
+
+
+```{r}
+# HCW immunoassay plots - SAMPLE
+# - Ancestral (Wuhan) vs Omicron RBD ELISA
+# Author: Wey Wen Lim
+# Date: September 30, 2022
+# Last updated: September 30, 2022
+
+# Load data ----
+# **NOTE: THIS PLOTTING DATASET IS PRE-PROCESSED FROM THE DATASET AVAILABLE IN THE DATA FOLDER:
+# STEPS:
+# 1. Identify baseline samples from biannual sampling rounds (we call it "routine" for short and use the pre-fix r1..11) - vaccines came in around mid-r2
+# 2. Group participants into groups based on their vaccination history 
+#    (e.g., for baseline levels, based on participants who eventually got the mRNA (by BioNTech, B) or inactivated (by SinoVac, S) vaccine as their first two doses,
+#     for dose 1-4, combine information from each doseX_brand variable, 1-1-1 = B-B-B, 4-4-4 = S-S-S, 1-1-4 = B-B-S, 4-4-1 = S-S-B and so on. 
+#     Am open to suggestions to change this labelling system to better ones)
+# 3. Plot antibody levels 21-42 days after each dose - this doesn't need to be limited to post-vaccination samples. Some "routine" samples also fall within this time frame
+# 4. For participants with antibody levels in step 3, identify a later sample (routine if possible) to plot the waning patterns
+
+# Script ends ----
+
 ```
 
