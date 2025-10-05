@@ -1,0 +1,575 @@
+---
+title: "analysis"
+author: "Tanmayi Patharkar"
+date: "`r Sys.Date()`"
+output: html_document
+---
+#load packages 
+```{r}
+library(librarian)
+shelf(dplyr) 
+shelf(tidyverse)
+shelf(readxl)
+shelf(tidyr)
+shelf(rlang)
+shelf(patchwork)
+```
+
+#data loading and processig 
+```{r}
+data <- read.csv("./data/data_03102025.csv") 
+dict <- read_excel("./data/dict.xlsx")
+
+data <- data %>%
+  mutate(posrat_p1_date = as.Date(posrat_p1_date, format = "%Y-%m-%d")) %>%
+  mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) 
+```
+
+#Preliminary Count Analysis 
+```{r}
+dose_count <- data %>%
+  summarise(across(matches("^dose[1-8]_date$"), ~ sum(!is.na(.), na.rm = TRUE), .names = "count_{col}")) %>%
+  pivot_longer(everything(), names_to = "dose", values_to = "count")
+
+ggplot(dose_count, aes(x = dose, y = count)) +
+  geom_col(fill = "skyblue") +
+  geom_text(aes(label = count), vjust = -0.5, size = 3) +
+  scale_y_continuous(
+    limits = c(0, 2000),
+    breaks = seq(0, 2000, by = 250),
+    minor_breaks = seq(0, 2000, by = 50),
+    expand = c(0, 0.02)
+  ) +
+  labs(title = "Number of Participants by Dose", x = "Dose", y = "Count") +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(color = "gray80"),
+    panel.grid.minor.y = element_line(color = "gray92"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+#Load Vaccine Dosages 
+```{r}
+data <- data %>%
+  mutate(
+    one_dose_permutation = paste(dose1_brand),
+    two_dose_permutation = paste(dose1_brand, dose2_brand, sep = "-"),
+    three_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, sep = "-"),
+    four_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, sep = "-"),
+    five_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, dose5_brand, sep = "-")
+  )
+
+#Make separate data frames for each vaccine permutation
+one_dose_data <- data %>%
+  filter(!grepl("NA", one_dose_permutation))
+
+two_dose_data <- data %>%
+  filter(!grepl("NA", two_dose_permutation))
+
+three_dose_data <- data %>%
+  filter(!grepl("NA", three_dose_permutation))
+
+four_dose_data <- data %>%
+  filter(!grepl("NA", four_dose_permutation))
+
+five_dose_data <- data %>%
+  filter(!grepl("NA", five_dose_permutation))
+```
+
+#Permutation Counts
+```{r}
+one_permutation_count <- one_dose_data %>%
+  group_by(one_dose_permutation) %>% 
+  summarise(count = n(), .groups = 'drop')
+
+two_permutation_count <- two_dose_data %>%
+  group_by(two_dose_permutation) %>% 
+  summarise(count = n(), .groups = 'drop')
+
+three_permutation_count <- three_dose_data %>%
+  group_by(three_dose_permutation) %>% 
+  summarise(count = n(), .groups = 'drop')
+
+four_permutation_count <- four_dose_data %>%
+  group_by(four_dose_permutation) %>% 
+  summarise(count = n(), .groups = 'drop')
+
+five_permutation_count <- five_dose_data %>%
+  group_by(five_dose_permutation) %>% 
+  summarise(count = n(), .groups = 'drop')
+```
+
+#Antibody Value Measurements
+```{r}
+source("scripts/fc_vaccine_perm.R")
+```
+
+
+##SVNT_WT
+
+##ONE
+```{r}
+one_svnt_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_svnt_wt, min_n = 5, dose_label = "1 Dose")
+
+one_valid_perms      <- one_svnt_wt$valid_perms
+one_dose_medians     <- one_svnt_wt$medians
+one_n_levels         <- one_svnt_wt$n_levels
+one_mid_x            <- one_svnt_wt$mid_x
+
+print(one_svnt_wt$valid_perm_count)
+```
+
+```{r}
+one_labels <- c("1" = " B", "4" = " S")
+
+response_colq <- "v1_svnt_wt"
+
+one_svnt_wt_plot <- ggplot() +
+  geom_jitter(data = one_valid_perms,
+              aes_string(x = "one_dose_permutation", y = response_colq, color = "one_dose_permutation"),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = one_dose_medians,
+                aes_string(x = "one_dose_permutation", y = "median",  
+                           ymin = "median", ymax = "median"),  
+                width = 0.5, colour = "black", size = 0.5) +  # Black for contrast
+  scale_x_discrete(labels = one_labels, expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  scale_color_manual(values = c("1" = "#1F77B4", "4" = "#FF7F0E")) + 
+  labs(x = NULL,
+       y = "WT sVNT Inhibition (%)",
+       caption = "1 Dose") +  
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+one_svnt_wt_plot
+```
+
+
+##TWO 
+```{r}
+two_svnt_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_svnt_wt, min_n = 5, dose_label = "2 Dose")
+
+two_valid_perms      <- two_svnt_wt$valid_perms
+two_dose_medians     <- two_svnt_wt$medians
+two_n_levels         <- two_svnt_wt$n_levels
+two_mid_x            <- two_svnt_wt$mid_x
+
+print(two_svnt_wt$valid_perm_count)
+```
+
+```{r}
+two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
+
+response_colq <- "v2_svnt_wt"
+
+two_svnt_wt_plot <- ggplot() +
+  geom_jitter(data = two_valid_perms,
+              aes(x = two_dose_permutation, y = !!sym(response_colq), color = two_dose_permutation),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = two_dose_medians,
+                aes(x = two_dose_permutation, y = median, 
+                    ymin = median, ymax = median),  
+                width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = two_labels, limits = c("1-1", "4-4"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = NULL,
+       y = "WT sVNT Inhibition (%)",
+       caption = "2 Doses") +  
+  theme_bw(base_size = 12) +  
+  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+two_svnt_wt_plot
+```
+
+
+##THREE
+```{r}
+three_svnt_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_svnt_wt, min_n = 5, dose_label = "3 Dose")
+
+three_valid_perms      <- three_svnt_wt$valid_perms
+three_dose_medians     <- three_svnt_wt$medians
+three_n_levels         <- three_svnt_wt$n_levels
+three_mid_x            <- three_svnt_wt$mid_x
+
+print(three_svnt_wt$valid_perm_count)
+```
+
+```{r}
+three_labels <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B", "1-1-4" = "B-B-S")
+
+response_colq <- "v3_svnt_wt"
+
+three_svnt_wt_plot <- ggplot() +
+  geom_jitter(data = three_valid_perms,
+              aes(x = three_dose_permutation, y = !!sym(response_colq), color = three_dose_permutation),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = three_dose_medians,
+                aes(x = three_dose_permutation, y = median, 
+                    ymin = median, ymax = median),  
+                width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = three_labels,limits = c("1-1-1", "4-4-4", "1-1-4", "4-4-1"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = NULL,
+       y = "WT sVNT Inhibition (%)",
+       caption = "3 Doses") +  
+  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E","4-4-1"= "#1B5E20", "1-1-4" = "#4A148C")) +
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+three_svnt_wt_plot
+```
+
+##FOUR
+```{r}
+four_svnt_wt <- fc_perm_summary(four_dose_data, four_dose_permutation, v4_svnt_wt, min_n = 5, dose_label = "4 Doses")
+
+four_valid_perms      <- four_svnt_wt$valid_perms
+four_dose_medians     <- four_svnt_wt$medians
+four_n_levels         <- four_svnt_wt$n_levels
+four_mid_x            <- four_svnt_wt$mid_x
+
+print(four_svnt_wt$valid_perm_count)
+```
+
+
+```{r}
+four_labels <- c("1-1-1-1" =" B-B-B-B", "1-1-1-9" =" B-B-B-O", "4-4-1-1" =" S-S-B-B", "4-4-1-9" =" S-S-B-O", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
+
+response_colq <- "v4_svnt_wt"
+
+four_svnt_wt_plot <- ggplot() +
+  geom_jitter(data = four_valid_perms,
+              aes(x = four_dose_permutation, y = !!sym(response_colq), color = four_dose_permutation),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = four_dose_medians,
+                aes(x = four_dose_permutation, y = median, 
+                    ymin = median, ymax = median),  
+                width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = four_labels, limits = c("1-1-1-1", "4-4-4-4", "4-4-4-1", "4-4-1-1", "1-1-1-9", "4-4-1-9"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = NULL,
+       y = "WT sVNT Inhibition (%)",
+       caption = "4 Doses") + 
+  scale_color_manual(values = c(
+    "1-1-1-1" = "#1F77B4",  
+    "1-1-1-9" = "#2CA02C",  
+    "4-4-1-1" = "#D62728",   
+    "4-4-1-9" = "#9467BD",   
+    "4-4-4-4" = "#8C564B",   
+    "4-4-4-1" = "#E377C2"   
+  )) +
+  theme_bw(base_size = 12) +  
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+four_svnt_wt_plot
+```
+
+
+###PANEL ORGANIZATION
+
+```{r}
+y_limits <- c(0, 110)
+
+one_svnt_wt_plot <- one_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = "WT sVNT Inhibition (%)") + 
+  theme(axis.text.y = element_text(size = 10), 
+        axis.ticks.y = element_line(),          
+        axis.line.y = element_line())           
+
+two_svnt_wt_plot <- two_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())   
+
+three_svnt_wt_plot <- three_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+four_svnt_wt_plot <- four_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+svnt_wt_combined_plot <- (one_svnt_wt_plot + 
+                  two_svnt_wt_plot + 
+                  three_svnt_wt_plot + 
+                  four_svnt_wt_plot) + 
+  plot_layout(widths = c(0.75, 0.75, 1.5, 2.25), ncol = 4) + plot_annotation(title = "WT sVNT", 
+                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
+  theme(plot.background = element_blank(),
+        plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        panel.border = element_blank(), 
+        plot.margin = margin(0, 0, 0, 0))
+
+print(svnt_wt_combined_plot)
+
+ggsave("svnt_wt_combined_plot.pdf", plot = svnt_wt_combined_plot, width = 10, height = 6)
+```
+
+
+
+#ELISA VALUES 
+
+##ONE
+```{r}
+one_elisa_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_elisa_wt, min_n = 5, dose_label = "1 Dose")
+
+one_valid_perms_e      <- one_elisa_wt$valid_perms
+one_dose_medians_e     <- one_elisa_wt$medians
+one_n_levels_e         <- one_elisa_wt$n_levels
+one_mid_x_e            <- one_elisa_wt$mid_x
+
+print(one_elisa_wt$valid_perm_count)
+```
+
+```{r}
+one_labels <- c("1" = " B", "4" = " S")
+
+response_colq <- "v1_elisa_wt"
+
+one_elisa_wt_plot <- ggplot() +
+  geom_jitter(data = one_valid_perms_e,
+              aes_string(x = "one_dose_permutation", y = response_colq, color = "one_dose_permutation"),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = one_dose_medians_e,
+                aes_string(x = "one_dose_permutation", y = "median",  
+                           ymin = "median", ymax = "median"),  
+                width = 0.5, colour = "black", size = 0.5) +  
+  scale_x_discrete(labels = one_labels, expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +
+  scale_color_manual(values = c("1" = "#1F77B4", "4" = "#FF7F0E")) + 
+  labs(x = NULL,
+       y = "WT RBD ELISA (OD value)",
+       caption = "1 Dose") +  
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+one_elisa_wt_plot
+```
+
+#TWO
+```{r}
+two_elisa_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_elisa_wt, min_n = 5, dose_label = "2 Dose")
+
+two_valid_perms_e      <- two_elisa_wt$valid_perms
+two_dose_medians_e     <- two_elisa_wt$medians
+two_n_levels_e         <- two_elisa_wt$n_levels
+two_mid_x_e            <- two_elisa_wt$mid_x
+
+print(two_elisa_wt$valid_perm_count)
+```
+
+```{r}
+two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
+
+response_colq <- "v2_elisa_wt"
+
+two_elisa_wt_plot <- ggplot() +
+  geom_jitter(data = two_valid_perms_e,
+              aes_string(x = "two_dose_permutation", y = response_colq, color = "two_dose_permutation"),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = two_dose_medians_e,
+                aes_string(x = "two_dose_permutation", y = "median",  
+                           ymin = "median", ymax = "median"),  
+                width = 0.5, colour = "black", size = 0.5) +  
+  scale_x_discrete(labels = two_labels, limits = c("1-1","4-4"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +
+  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) + 
+  labs(x = NULL,
+       y = "WT RBD ELISA (OD value)",
+       caption = "2 Doses") +  
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+two_elisa_wt_plot
+```
+
+#THREE
+```{r}
+three_elisa_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_elisa_wt, min_n = 5, dose_label = "3 Dose")
+
+three_valid_perms_e      <- three_elisa_wt$valid_perms
+three_dose_medians_e     <- three_elisa_wt$medians
+three_n_levels_e         <- three_elisa_wt$n_levels
+three_mid_x_e            <- three_elisa_wt$mid_x
+
+print(three_elisa_wt$valid_perm_count)
+```
+
+```{r}
+three_labels <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B")
+
+response_colq <- "v3_elisa_wt"
+
+three_elisa_wt_plot <- ggplot() +
+  geom_jitter(data = three_valid_perms_e,
+              aes_string(x = "three_dose_permutation", y = response_colq, color = "three_dose_permutation"),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = three_dose_medians_e,
+                aes_string(x = "three_dose_permutation", y = "median",  
+                           ymin = "median", ymax = "median"),  
+                width = 0.5, colour = "black", size = 0.5) +  
+  scale_x_discrete(labels = three_labels, limits = c("1-1-1", "4-4-4", "4-4-1"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +
+  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E", "4-4-1" = "#1B5E20", "1-1-4" = "#4A148C")) + 
+  labs(x = NULL,  
+       y = "WT RBD ELISA (OD value)",
+       caption = "3 Doses") +  
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+three_elisa_wt_plot
+```
+
+
+##PANELS 
+
+```{r}
+y_limits <- c(0, 6) 
+
+one_elisa_wt_plot <- one_elisa_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = "WT RBD ELISA (OD value)") + 
+  theme(axis.text.y = element_text(size = 10), 
+        axis.ticks.y = element_line(),          
+        axis.line.y = element_line())           
+
+two_elisa_wt_plot <- two_elisa_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())   
+
+three_elisa_wt_plot <- three_elisa_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+elisa_wt_combined_plot <- (one_elisa_wt_plot + 
+                         two_elisa_wt_plot + 
+                         three_elisa_wt_plot) + 
+  plot_layout(ncol = 3) + 
+  plot_annotation(title = "WT RBD ELISA", 
+                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
+  theme(plot.background = element_blank(),
+        panel.border = element_blank(),    
+        plot.margin = margin(0, 0, 0, 0))
+
+print(elisa_wt_combined_plot)
+
+ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 10, height = 6)
+```
+
+
+
+
+
+
+
+
+#Instructions
+```{r}
+# HCW immunoassay plots - SAMPLE
+# - Ancestral (Wuhan) vs Omicron RBD ELISA
+# Author: Wey Wen Lim
+# Date: September 30, 2022
+# Last updated: September 30, 2022
+
+# Load data ----
+# **NOTE: THIS PLOTTING DATASET IS PRE-PROCESSED FROM THE DATASET AVAILABLE IN THE DATA FOLDER:
+# STEPS:
+# 1. Identify baseline samples from biannual sampling rounds (we call it "routine" for short and use the pre-fix r1..11) - vaccines came in around mid-r2
+# 2. Group participants into groups based on their vaccination history 
+#    (e.g., for baseline levels, based on participants who eventually got the mRNA (by BioNTech, B) or inactivated (by SinoVac, S) vaccine as their first two doses,
+#     for dose 1-4, combine information from each doseX_brand variable, 1-1-1 = B-B-B, 4-4-4 = S-S-S, 1-1-4 = B-B-S, 4-4-1 = S-S-B and so on. 
+#     Am open to suggestions to change this labelling system to better ones)
+# 3. Plot antibody levels 21-42 days after each dose - this doesn't need to be limited to post-vaccination samples. Some "routine" samples also fall within this time frame
+# 4. For participants with antibody levels in step 3, identify a later sample (routine if possible) to plot the waning patterns
+
+# Script ends ----
+
+```
+

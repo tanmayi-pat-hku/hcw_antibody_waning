@@ -2,11 +2,14 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
   perm_colq     <- enquo(perm_col)
   response_colq <- enquo(response_col)
   perm_name     <- as_name(perm_colq)
-  
+  #Filtering: Removes rows where either the permutation or the response variable is NA
   plot_data <- df %>%
     filter(!is.na(!!perm_colq) & !is.na(!!response_colq)) %>%
     mutate(!!perm_colq := factor(as.character(!!perm_colq)),
            dose_count = dose_label)
+  #Grouping: Groups the data by the permutation column.
+  #Filtering: Keeps only those groups where the count of entries is greater than or equal to min_n.
+  #Re-factoring: Ensures that the levels of the permutation factor are unique.
   
   valid_perms <- plot_data %>%
     group_by(!!perm_colq) %>%
@@ -14,7 +17,7 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
     ungroup() %>%
     mutate(!!perm_colq := factor(as.character(!!perm_colq),
                                  levels = unique(as.character(!!perm_colq))))
-  
+  #This creates a new data frame that counts the number of valid entries for each permutation.
   valid_perm_count <- valid_perms %>%
     count(!!perm_colq, name = "count")
   
@@ -39,3 +42,11 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
     mid_x = mid_x
   )
 }
+
+
+#Parameters:
+#df: The input dataframe containing the data to summarize.
+#perm_col: The column representing permutations of vaccine brands (e.g., one_dose_permutation, two_dose_permutation).
+#response_col: The column representing the response variable (e.g., vaccine effectiveness or some measurable outcome).
+#min_n: Minimum number of entries required for a permutation to be considered valid (default is 5).
+#dose_label: A label for the dose count (default is "4 Doses").
