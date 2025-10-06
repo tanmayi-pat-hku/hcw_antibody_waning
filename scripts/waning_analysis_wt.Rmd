@@ -106,6 +106,234 @@ source("scripts/fc_vaccine_perm.R")
 ```
 
 
+#Baseline Value Assessment 
+```{r}
+get_baselines <- function(data, value_type, group_vars = NULL) {
+  date_pattern <- "^r\\d+_date$"
+  value_pattern <- paste0("^r\\d+_", value_type, "$")
+  index_pattern <- paste0("r(\\d+)_", value_type)
+  
+  long_data <- data %>%
+    pivot_longer(
+      cols = matches(date_pattern),
+      names_to = "r_index",
+      values_to = "r_date"
+    ) %>%
+    pivot_longer(
+      cols = matches(value_pattern),
+      names_to = "value_index",
+      values_to = "value",
+      names_pattern = index_pattern
+    ) %>%
+    filter(r_index == paste0("r", value_index, "_date")) %>%
+    filter(!is.na(r_date) & r_date < v1_date & !is.na(value))
+  
+  if (!is.null(group_vars)) {
+    long_data <- long_data %>% group_by(across(all_of(group_vars)))
+  } else {
+    long_data <- long_data %>% group_by(across(-c(r_index, r_date, value_index, value)))
+  }
+  
+  long_data %>%
+    slice(which.min(r_date)) %>%
+    rename(
+      earliest_r_date = r_date,
+      baseline_value = value,
+      baseline_r = r_index
+    ) %>%
+    select(-value_index)
+}
+
+baseline_elisa <- get_baselines(data, "elisa_wt")  
+baseline_svnt <- get_baselines(data, "svnt_wt")    
+
+print(head(baseline_elisa))
+print(head(baseline_svnt))
+```
+
+
+
+```{r}
+median_elisa <- baseline_elisa %>%
+  group_by(dose1_brand) %>%
+  summarise(median_value = median(baseline_value, na.rm = TRUE), .groups = 'drop')
+
+median_svnt <- baseline_svnt %>%
+  group_by(dose1_brand) %>%
+  summarise(median_value = median(baseline_value, na.rm = TRUE), .groups = 'drop')
+
+
+baseline_elisa$elisa_wt <- as.numeric(baseline_elisa$baseline_value)
+baseline_svnt$svnt_wt <- as.numeric(baseline_svnt$baseline_value)
+```
+
+
+```{r}
+one_labels <- c("1" = " B", "4" = "S")
+
+elisa_baseline_wt <- ggplot() +
+  geom_jitter(data = baseline_elisa,
+              aes(x = factor(dose1_brand), y = baseline_value, color = factor(dose1_brand)),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = median_elisa,
+                 aes(x = factor(dose1_brand), y = median_value, 
+                     ymin = median_value, ymax = median_value),  
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = one_labels, expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +
+  scale_color_manual(values = c("1" = "#1F77B4", "4" = "#FF7F0E")) +
+  labs(x = NULL,
+       y = "WT RBD ELISA (OD value)",
+       caption = "Baseline") +  
+  theme_bw(base_size = 12) +  
+    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+elisa_baseline_wt
+```
+
+
+```{r}
+one_labels <- c("1" = " B", "4" = "S")
+
+svnt_baseline_wt <- ggplot() +
+  geom_jitter(data = baseline_svnt,
+              aes(x = factor(dose1_brand), y = baseline_value, color = factor(dose1_brand)),
+              alpha = 0.8, width = 0.18, size = 2.5) +
+  geom_crossbar(data = median_elisa,
+                 aes(x = factor(dose1_brand), y = median_value, 
+                     ymin = median_value, ymax = median_value),  
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = one_labels, expand = expansion(add = c(0.5, 0.5))) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  scale_color_manual(values = c("1" = "#1F77B4", "4" = "#FF7F0E")) + 
+  labs(x = NULL,
+       y = "WT sVNT Inhibition (%)",
+       caption = "Baseline") +  
+  theme_bw(base_size = 12) +  
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+svnt_baseline_wt
+```
+
+#POST INFECTION 
+
+#calculate FIRST infection recorded 
+```{r}
+calculate_earliest_date <- function(data) {
+  data <- data %>%
+    mutate(earliest_posdate = pmin(posdate_p1, posdate_p2, posdate_p3, posdate_p4, na.rm = TRUE)) %>%
+    filter(!is.na(earliest_posdate))  # Remove rows with NA earliest_posdate
+  return(data)
+}
+
+first_infection_data <- calculate_earliest_date(data)
+```
+```{r}
+extract_valid_dates_with_weights <- function(data) {
+  if (!"earliest_posdate" %in% colnames(data)) {
+    data <- calculate_earliest_date(data)
+  }
+
+  date_cols <- paste0("r", 1:11, "_date")
+  data[date_cols] <- lapply(data[date_cols], as.Date)
+
+  elisa_weight_cols <- paste0("r", 1:11, "_elisa_wt")
+  svnt_weight_cols <- paste0("r", 1:11, "_svnt_wt")
+
+  long_data <- data %>%
+    pivot_longer(
+      cols = all_of(date_cols),
+      names_to = "r_index",
+      values_to = "valid_date"
+    ) %>%
+    rowwise() %>%
+    mutate(
+      rX_elisa_wt = case_when(
+        r_index == "r1_date" ~ r1_elisa_wt,
+        r_index == "r2_date" ~ r2_elisa_wt,
+        r_index == "r3_date" ~ r3_elisa_wt,
+        r_index == "r4_date" ~ r4_elisa_wt,
+        r_index == "r5_date" ~ r5_elisa_wt,
+        r_index == "r6_date" ~ r6_elisa_wt,
+        r_index == "r7_date" ~ r7_elisa_wt,
+        r_index == "r8_date" ~ r8_elisa_wt,
+        r_index == "r9_date" ~ r9_elisa_wt,
+        r_index == "r10_date" ~ r10_elisa_wt,
+        r_index == "r11_date" ~ r11_elisa_wt,
+        TRUE ~ NA_real_
+      ),
+      rX_svnt_wt = case_when(
+        r_index == "r1_date" ~ r1_svnt_wt,
+        r_index == "r2_date" ~ r2_svnt_wt,
+        r_index == "r3_date" ~ r3_svnt_wt,
+        r_index == "r4_date" ~ r4_svnt_wt,
+        r_index == "r5_date" ~ r5_svnt_wt,
+        r_index == "r6_date" ~ r6_svnt_wt,
+        r_index == "r7_date" ~ r7_svnt_wt,
+        r_index == "r8_date" ~ r8_svnt_wt,
+        r_index == "r9_date" ~ r9_svnt_wt,
+        r_index == "r10_date" ~ r10_svnt_wt,
+        r_index == "r11_date" ~ r11_svnt_wt,
+        TRUE ~ NA_real_
+      )
+    ) %>%
+    filter(
+      !is.na(valid_date) & valid_date > (earliest_posdate + 30) & valid_date <= (earliest_posdate + 60)
+    )
+
+  return(long_data %>% select(valid_date, rX_elisa_wt, rX_svnt_wt))
+}
+
+data_with_earliest <- calculate_earliest_date(data)
+
+valid_dates_result <- extract_valid_dates_with_weights(data_with_earliest)
+
+print(head(valid_dates_result))
+```
+```{r}
+median_svnt <- median(valid_dates_result$rX_svnt_wt, na.rm = TRUE) 
+median_df <- data.frame(x = factor(1), median = median_svnt)
+
+post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt_wt)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "#006400") + 
+  geom_crossbar( data = median_df, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
+  geom_point(aes(x = factor(1), y = median_svnt), colour = "black", size = 3) + 
+  scale_x_discrete(labels = c("Post-Infection"), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)") + 
+  theme_bw(base_size = 12) + 
+  theme( plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
+         plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
+         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+         axis.ticks = element_blank(), legend.position = "none", 
+         panel.border = element_blank(), 
+         axis.line = element_line(size = 0.5, color = "black") )
+
+post_infection_svnt
+```
+
+
+
+
 ##SVNT_WT
 
 ##ONE
@@ -265,7 +493,7 @@ print(four_svnt_wt$valid_perm_count)
 
 
 ```{r}
-four_labels <- c("1-1-1-1" =" B-B-B-B", "1-1-1-9" =" B-B-B-O", "4-4-1-1" =" S-S-B-B", "4-4-1-9" =" S-S-B-O", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
+four_labels <- c("1-1-1-1" =" B-B-B-B", "4-4-1-1" =" S-S-B-B", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
 
 response_colq <- "v4_svnt_wt"
 
@@ -277,7 +505,7 @@ four_svnt_wt_plot <- ggplot() +
                 aes(x = four_dose_permutation, y = median, 
                     ymin = median, ymax = median),  
                 width = 0.5, colour = "black", size = 0.5) +
-  scale_x_discrete(labels = four_labels, limits = c("1-1-1-1", "4-4-4-4", "4-4-4-1", "4-4-1-1", "1-1-1-9", "4-4-1-9"), expand = expansion(add = c(0.5, 0.5))) +
+  scale_x_discrete(labels = four_labels, limits = c("1-1-1-1", "4-4-4-4", "4-4-4-1", "4-4-1-1"), expand = expansion(add = c(0.5, 0.5))) +
   scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
   labs(x = NULL,
        y = "WT sVNT Inhibition (%)",
@@ -310,14 +538,27 @@ four_svnt_wt_plot
 ###PANEL ORGANIZATION
 
 ```{r}
-y_limits <- c(0, 110)
+y_limits <- c(0, 105)
 
-one_svnt_wt_plot <- one_svnt_wt_plot + 
-  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+svnt_baseline_wt <- svnt_baseline_wt + scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
   labs(y = "WT sVNT Inhibition (%)") + 
   theme(axis.text.y = element_text(size = 10), 
         axis.ticks.y = element_line(),          
-        axis.line.y = element_line())           
+        axis.line.y = element_line())   
+
+post_infection_svnt <- post_infection_svnt + 
+scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
+one_svnt_wt_plot <- one_svnt_wt_plot + 
+scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())          
 
 two_svnt_wt_plot <- two_svnt_wt_plot + 
   scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
@@ -340,11 +581,11 @@ four_svnt_wt_plot <- four_svnt_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-svnt_wt_combined_plot <- (one_svnt_wt_plot + 
+svnt_wt_combined_plot <- (svnt_baseline_wt + post_infection_svnt + one_svnt_wt_plot + 
                   two_svnt_wt_plot + 
                   three_svnt_wt_plot + 
                   four_svnt_wt_plot) + 
-  plot_layout(widths = c(0.75, 0.75, 1.5, 2.25), ncol = 4) + plot_annotation(title = "WT sVNT", 
+  plot_layout(widths = c(1.0, 0.5, 1.0, 1.0, 2.0, 2.0), ncol = 6) + plot_annotation(title = "WT sVNT", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
@@ -353,7 +594,7 @@ svnt_wt_combined_plot <- (one_svnt_wt_plot +
 
 print(svnt_wt_combined_plot)
 
-ggsave("svnt_wt_combined_plot.pdf", plot = svnt_wt_combined_plot, width = 10, height = 6)
+ggsave("svnt_wt_combined_plot.pdf", plot = svnt_wt_combined_plot, width = 18 , height = 6)
 ```
 
 
@@ -502,17 +743,24 @@ three_elisa_wt_plot
 ```
 
 
+
 ##PANELS 
 
 ```{r}
 y_limits <- c(0, 6) 
 
-one_elisa_wt_plot <- one_elisa_wt_plot + 
-  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
   labs(y = "WT RBD ELISA (OD value)") + 
   theme(axis.text.y = element_text(size = 10), 
         axis.ticks.y = element_line(),          
-        axis.line.y = element_line())           
+        axis.line.y = element_line())  
+
+one_elisa_wt_plot <- one_elisa_wt_plot + 
+ scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())         
 
 two_elisa_wt_plot <- two_elisa_wt_plot + 
   scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
@@ -528,10 +776,10 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot <- (one_elisa_wt_plot + 
+elisa_wt_combined_plot <- (elisa_baseline_wt + one_elisa_wt_plot + 
                          two_elisa_wt_plot + 
                          three_elisa_wt_plot) + 
-  plot_layout(ncol = 3) + 
+  plot_layout(ncol = 4) + 
   plot_annotation(title = "WT RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
   theme(plot.background = element_blank(),
@@ -540,13 +788,8 @@ elisa_wt_combined_plot <- (one_elisa_wt_plot +
 
 print(elisa_wt_combined_plot)
 
-ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 10, height = 6)
+ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 15, height = 6)
 ```
-
-
-
-
-
 
 
 
