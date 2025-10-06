@@ -248,6 +248,7 @@ calculate_earliest_date <- function(data) {
 
 first_infection_data <- calculate_earliest_date(data)
 ```
+
 ```{r}
 extract_valid_dates_with_weights <- function(data) {
   if (!"earliest_posdate" %in% colnames(data)) {
@@ -310,16 +311,17 @@ valid_dates_result <- extract_valid_dates_with_weights(data_with_earliest)
 
 print(head(valid_dates_result))
 ```
+
 ```{r}
 median_svnt <- median(valid_dates_result$rX_svnt_wt, na.rm = TRUE) 
-median_df <- data.frame(x = factor(1), median = median_svnt)
+median_df_svnt <- data.frame(x = factor(1), median = median_svnt)
 
 post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt_wt)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "#006400") + 
-  geom_crossbar( data = median_df, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar( data = median_df_svnt, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
   geom_point(aes(x = factor(1), y = median_svnt), colour = "black", size = 3) + 
-  scale_x_discrete(labels = c("Post-Infection"), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)") + 
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "30-60 Days After Infection") + 
   theme_bw(base_size = 12) + 
   theme( plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
          plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
@@ -331,6 +333,28 @@ post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt
 post_infection_svnt
 ```
 
+```{r}
+median_elisa<- median(valid_dates_result$rX_elisa_wt, na.rm = TRUE) 
+median_df_elisa <- data.frame(x = factor(1), median = median_elisa)
+
+post_infection_elisa <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_elisa_wt)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar(data = median_df_elisa, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
+  geom_point(aes(x = factor(1), y = median_elisa), colour = "black", size = 3) + 
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "30-60 Days After Infection") + 
+  theme_bw(base_size = 12) + 
+  theme( plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
+         plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
+         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+         axis.ticks = element_blank(), legend.position = "none", 
+         panel.border = element_blank(), 
+         axis.line = element_line(size = 0.5, color = "black") )
+
+post_infection_elisa
+
+ggsave("post_infection_elisa.pdf", plot = post_infection_elisa, width = 10 , height = 6)
+```
 
 
 
@@ -585,7 +609,7 @@ svnt_wt_combined_plot <- (svnt_baseline_wt + post_infection_svnt + one_svnt_wt_p
                   two_svnt_wt_plot + 
                   three_svnt_wt_plot + 
                   four_svnt_wt_plot) + 
-  plot_layout(widths = c(1.0, 0.5, 1.0, 1.0, 2.0, 2.0), ncol = 6) + plot_annotation(title = "WT sVNT", 
+  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + plot_annotation(title = "WT sVNT", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
@@ -594,7 +618,7 @@ svnt_wt_combined_plot <- (svnt_baseline_wt + post_infection_svnt + one_svnt_wt_p
 
 print(svnt_wt_combined_plot)
 
-ggsave("svnt_wt_combined_plot.pdf", plot = svnt_wt_combined_plot, width = 18 , height = 6)
+ggsave("svnt_wt_combined_plot.pdf", plot = svnt_wt_combined_plot, width = 20 , height = 6)
 ```
 
 
@@ -755,6 +779,12 @@ elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, b
         axis.ticks.y = element_line(),          
         axis.line.y = element_line())  
 
+post_infection_elisa <- post_infection_elisa + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
 one_elisa_wt_plot <- one_elisa_wt_plot + 
  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
   labs(y = NULL) +  
@@ -776,10 +806,10 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot <- (elisa_baseline_wt + one_elisa_wt_plot + 
+elisa_wt_combined_plot <- (elisa_baseline_wt + post_infection_elisa + one_elisa_wt_plot + 
                          two_elisa_wt_plot + 
                          three_elisa_wt_plot) + 
-  plot_layout(ncol = 4) + 
+  plot_layout(ncol = 5) + 
   plot_annotation(title = "WT RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
   theme(plot.background = element_blank(),
@@ -788,7 +818,7 @@ elisa_wt_combined_plot <- (elisa_baseline_wt + one_elisa_wt_plot +
 
 print(elisa_wt_combined_plot)
 
-ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 15, height = 6)
+ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 20, height = 6)
 ```
 
 
