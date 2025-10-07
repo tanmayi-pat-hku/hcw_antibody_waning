@@ -105,53 +105,32 @@ five_permutation_count <- five_dose_data %>%
 source("scripts/fc_vaccine_perm.R")
 ```
 
+#Baseline Value Measurements
+```{r}
+source("scripts/fc_get_baselines.R")
+```
+
 
 #Baseline Value Assessment 
 ```{r}
-get_baselines <- function(data, value_type, group_vars = NULL) {
-  date_pattern <- "^r\\d+_date$"
-  value_pattern <- paste0("^r\\d+_", value_type, "$")
-  index_pattern <- paste0("r(\\d+)_", value_type)
-  
-  long_data <- data %>%
-    pivot_longer(
-      cols = matches(date_pattern),
-      names_to = "r_index",
-      values_to = "r_date"
-    ) %>%
-    pivot_longer(
-      cols = matches(value_pattern),
-      names_to = "value_index",
-      values_to = "value",
-      names_pattern = index_pattern
-    ) %>%
-    filter(r_index == paste0("r", value_index, "_date")) %>%
-    filter(!is.na(r_date) & r_date < v1_date & !is.na(value))
-  
-  if (!is.null(group_vars)) {
-    long_data <- long_data %>% group_by(across(all_of(group_vars)))
-  } else {
-    long_data <- long_data %>% group_by(across(-c(r_index, r_date, value_index, value)))
-  }
-  
-  long_data %>%
-    slice(which.min(r_date)) %>%
-    rename(
-      earliest_r_date = r_date,
-      baseline_value = value,
-      baseline_r = r_index
-    ) %>%
-    select(-value_index)
-}
-
 baseline_elisa <- get_baselines(data, "elisa_wt")  
 baseline_svnt <- get_baselines(data, "svnt_wt")    
 
 print(head(baseline_elisa))
 print(head(baseline_svnt))
 ```
+#Find Common Individuals 
 
+Find Individuals that have data for BASELINE + AND ALL DOSES 
+```{r}
+three_dose_data$base_elisa <- baseline_elisa$baseline_value[match(three_dose_data$id, baseline_elisa$id)] 
 
+three_dose_elisa_homologous <- three_dose_data %>%
+  filter(!is.na(base_elisa) & !is.na(v1_elisa_wt) & !is.na(v2_elisa_wt) & !is.na(v3_elisa_wt)) %>%
+  filter(grepl("1-1-1|4-4-4", three_dose_permutation))
+
+three_dose_elisa_homologous
+```
 
 ```{r}
 median_elisa <- baseline_elisa %>%
@@ -384,7 +363,7 @@ one_svnt_wt_plot <- ggplot() +
   geom_crossbar(data = one_dose_medians,
                 aes_string(x = "one_dose_permutation", y = "median",  
                            ymin = "median", ymax = "median"),  
-                width = 0.5, colour = "black", size = 0.5) +  # Black for contrast
+                width = 0.5, colour = "black", size = 0.5) +  
   scale_x_discrete(labels = one_labels, expand = expansion(add = c(0.5, 0.5))) +
   scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
   scale_color_manual(values = c("1" = "#1F77B4", "4" = "#FF7F0E")) + 

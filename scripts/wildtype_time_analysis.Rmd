@@ -24,3 +24,189 @@ data <- data %>%
   mutate(posrat_p1_date = as.Date(posrat_p1_date, format = "%Y-%m-%d")) %>%
   mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) 
 ```
+
+
+#Baseline Value Measurements
+```{r}
+source("scripts/fc_get_baselines.R")
+```
+
+```{r}
+baseline_elisa <- get_baselines(data, "elisa_wt")  
+baseline_svnt <- get_baselines(data, "svnt_wt")    
+
+print(head(baseline_elisa))
+print(head(baseline_svnt))
+```
+
+##ELISA PER DOSE 
+```{r}
+three_dose_data$base_elisa <- baseline_elisa$baseline_value[match(three_dose_data$id, baseline_elisa$id)]
+
+three_dose_elisa_homologous <- three_dose_data %>%
+filter(!is.na(base_elisa) & !is.na(v1_elisa_wt) & !is.na(v2_elisa_wt) & !is.na(v3_elisa_wt)) %>%
+filter(grepl("1-1-1|4-4-4", three_dose_permutation))
+
+three_dose_elisa_homologous
+```
+
+
+```{r}
+three_dose_long <- three_dose_elisa_homologous %>%
+  select(id, base_elisa, v1_elisa_wt, v2_elisa_wt, v3_elisa_wt, three_dose_permutation) %>%
+  pivot_longer(cols = c(base_elisa, v1_elisa_wt, v2_elisa_wt, v3_elisa_wt), 
+               names_to = "dose", values_to = "value")
+
+three_dose_long <- three_dose_long %>%
+  mutate(color = ifelse(three_dose_permutation == "1-1-1", "#1F77B4", "#FF7F0E")) 
+
+median_values <- three_dose_long %>%
+  group_by(dose, three_dose_permutation) %>%
+  summarize(median_value = median(value, na.rm = TRUE), .groups = 'drop')
+```
+
+
+
+```{r}
+shade_df <- tibble(
+  xmin = c(0.5, 1.5, 2.5, 3.5),
+  xmax = c(1.5, 2.5, 3.5, 4.5),
+  alpha = c(0.02, 0.05, 0.08, 0.11)   
+)
+
+elisa_wt_time_plot <- ggplot() +
+  geom_rect(
+    data = shade_df,
+    aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf, alpha = alpha),
+    fill = "gray40", inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  scale_alpha_identity() +
+  geom_line(
+    data = three_dose_long,
+    aes(x = dose, y = value, group = id, color = three_dose_permutation),
+    alpha = 0.25, size = 0.4, show.legend = FALSE
+  ) +
+  geom_point(
+    data = three_dose_long,
+    aes(x = dose, y = value, color = three_dose_permutation),
+    alpha = 0.25, size = 0.8, show.legend = FALSE
+  ) +
+  geom_line(
+    data = median_values,
+    aes(x = dose, y = median_value, group = three_dose_permutation, color = three_dose_permutation),
+    size = 1.4
+  ) +
+  geom_point(
+    data = median_values,
+    aes(x = dose, y = median_value, color = three_dose_permutation),
+    size = 3
+  ) +
+  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E")) +
+  scale_x_discrete(labels = c("base_elisa" = "Baseline",
+                              "v1_elisa_wt" = "Dose 1",
+                              "v2_elisa_wt" = "Dose 2",
+                              "v3_elisa_wt" = "Dose 3")) +
+  scale_y_continuous(limits = c(0, 6), expand = c(0, 0)) +
+  labs(x = NULL,
+       y = "WT RBD ELISA (OD value)") +
+  theme_minimal() +
+   theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.title = element_text(face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        axis.ticks = element_line(),  
+        legend.position = "none",
+        panel.border = element_blank(),
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+elisa_wt_time_plot 
+
+ggsave("elisa_wt_time_plot.pdf", plot = elisa_wt_time_plot, width = 10, height = 6)
+```
+
+
+#SVNT 
+```{r}
+two_dose_data$base_svnt <- baseline_svnt$baseline_value[match(two_dose_data$id, baseline_svnt$id)]
+
+two_dose_svnt_homologous <- two_dose_data %>%
+  filter(!is.na(base_svnt) & !is.na(v1_svnt_wt) & !is.na(v2_svnt_wt)) %>%
+  filter(grepl("1-1|4-4", two_dose_permutation))
+
+shade_df <- tibble(
+  xmin = c(0.5, 1.5, 2.5),
+  xmax = c(1.5, 2.5, 3.5),
+  alpha = c(0.02, 0.05, 0.08)
+)
+
+two_dose_long_svnt <- two_dose_svnt_homologous %>%
+  select(id, base_svnt, v1_svnt_wt, v2_svnt_wt, two_dose_permutation) %>%
+  pivot_longer(cols = c(base_svnt, v1_svnt_wt, v2_svnt_wt),
+               names_to = "dose", values_to = "value") %>%
+  mutate(
+    color = ifelse(two_dose_permutation == "1-1", "#1F77B4", "#FF7F0E"),
+    dose = factor(dose, levels = c("base_svnt", "v1_svnt_wt", "v2_svnt_wt"))
+  )
+
+median_values_svnt <- two_dose_long_svnt %>%
+  group_by(dose, two_dose_permutation) %>%
+  summarize(median_value = median(value, na.rm = TRUE), .groups = "drop")
+
+```
+
+```{r}
+svnt_wt_time_plot <- ggplot() +
+  geom_rect(
+    data = shade_df,
+    aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf, alpha = alpha),
+    fill = "gray40", inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  scale_alpha_identity() +
+  geom_line(
+    data = two_dose_long_svnt,
+    aes(x = dose, y = value, group = id, color = two_dose_permutation),
+    alpha = 0.25, size = 0.4, show.legend = FALSE
+  ) +
+  geom_point(
+    data = two_dose_long_svnt,
+    aes(x = dose, y = value, color = two_dose_permutation),
+    alpha = 0.25, size = 0.8, show.legend = FALSE
+  ) +
+  geom_line(
+    data = median_values_svnt,
+    aes(x = dose, y = median_value, group = two_dose_permutation, color = two_dose_permutation),
+    size = 1.4
+  ) +
+  geom_point(
+    data = median_values_svnt,
+    aes(x = dose, y = median_value, color = two_dose_permutation),
+    size = 3
+  ) +
+  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +
+  scale_x_discrete(labels = c("base_svnt" = "Baseline",
+                              "v1_svnt_wt" = "Dose 1",
+                              "v2_svnt_wt" = "Dose 2")) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = NULL, y = "WT sVNT Inhibition (%)") +
+  theme_minimal() +
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line(),
+    legend.position = "none",
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+svnt_wt_time_plot
+
+ggsave("svnt_wt_time_plot.pdf", plot = svnt_wt_time_plot, width = 10, height = 6)
+```
+
