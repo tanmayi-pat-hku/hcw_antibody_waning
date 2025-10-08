@@ -165,7 +165,7 @@ elisa_baseline_wt <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "Baseline") +  
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -199,7 +199,7 @@ svnt_baseline_wt <- ggplot() +
        y = "WT sVNT Inhibition (%)",
        caption = "Baseline") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -298,11 +298,10 @@ median_df_svnt <- data.frame(x = factor(1), median = median_svnt)
 post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt_wt)) + 
   geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
   geom_crossbar( data = median_df_svnt, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
-  geom_point(aes(x = factor(1), y = median_svnt), colour = "black", size = 3) + 
   scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "30-60 Days After Infection") + 
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Cohort Post-Infection") + 
   theme_bw(base_size = 12) + 
-  theme( plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
+  theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
          plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
          axis.ticks = element_blank(), legend.position = "none", 
@@ -319,11 +318,10 @@ median_df_elisa <- data.frame(x = factor(1), median = median_elisa)
 post_infection_elisa <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_elisa_wt)) + 
   geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
   geom_crossbar(data = median_df_elisa, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
-  geom_point(aes(x = factor(1), y = median_elisa), colour = "black", size = 3) + 
   scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "30-60 Days After Infection") + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Cohort Post-Infection") + 
   theme_bw(base_size = 12) + 
-  theme( plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
+  theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
          plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
          axis.ticks = element_blank(), legend.position = "none", 
@@ -371,7 +369,7 @@ one_svnt_wt_plot <- ggplot() +
        y = "WT sVNT Inhibition (%)",
        caption = "1 Dose") +  
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -419,7 +417,7 @@ two_svnt_wt_plot <- ggplot() +
        caption = "2 Doses") +  
   theme_bw(base_size = 12) +  
   scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -467,7 +465,7 @@ three_svnt_wt_plot <- ggplot() +
        caption = "3 Doses") +  
   scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E","4-4-1"= "#1B5E20", "1-1-4" = "#4A148C")) +
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -522,7 +520,7 @@ four_svnt_wt_plot <- ggplot() +
     "4-4-4-1" = "#E377C2"   
   )) +
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -636,7 +634,7 @@ one_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "1 Dose") +  
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -683,7 +681,7 @@ two_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "2 Doses") +  
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -730,7 +728,7 @@ three_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "3 Doses") +  
   theme_bw(base_size = 12) +  
-    theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
@@ -748,7 +746,6 @@ three_elisa_wt_plot
 
 
 ##PANELS 
-
 ```{r}
 y_limits <- c(0, 6) 
 

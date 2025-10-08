@@ -1,0 +1,228 @@
+---
+title: "community_infection_analysis"
+author: "Tanmayi Patharkar"
+date: "`r Sys.Date()`"
+output: html_document
+---
+#packages
+```{r}
+library(librarian)
+shelf(dplyr) 
+shelf(tidyverse)
+shelf(readxl)
+shelf(tidyr)
+shelf(rlang)
+shelf(patchwork)
+```
+
+#Load Data Frame 
+```{r}
+community_data <- read.csv("./data/data_20251007.csv") 
+community_data
+```
+
+
+#Plot Community Infection Levels 
+
+#POST INFECTION ELISA 
+```{r}
+comm_elisa_data <- community_data %>%
+  filter(!is.na(i1_elisa_wt)) 
+
+comm_elisa_median <- comm_elisa_data %>%
+  summarize(median = median(i1_elisa_wt, na.rm = TRUE), .groups = 'drop')
+```
+
+```{r}
+median_value_elisa <- comm_elisa_median$median
+
+comm_infection_elisa_plot <- ggplot(comm_elisa_data, aes(x = factor(1), y = i1_elisa_wt)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar(aes(x = factor(1), y = median_value_elisa, ymin = median_value_elisa, ymax = median_value_elisa), 
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
+  labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Community Post-Infection") + 
+  theme_bw(base_size = 12) + 
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+        plot.title = element_text(face = "bold", size = 14), 
+        axis.title = element_text(face = "bold"), 
+        axis.text.x = element_text(face = "bold"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.ticks = element_blank(), 
+        legend.position = "none", 
+        panel.border = element_blank(), 
+        axis.line = element_line(size = 0.5, color = "black"))
+
+print(comm_infection_elisa_plot)
+```
+
+#POST INFECTION sVNT 
+
+```{r}
+comm_svnt_data <- community_data %>%
+  filter(!is.na(i1_svnt_wt)) 
+
+comm_svnt_median <- comm_svnt_data %>%
+  summarize(median = median(i1_svnt_wt, na.rm = TRUE), .groups = 'drop')
+```
+
+```{r}
+median_value_svnt <- comm_svnt_median$median
+
+comm_infection_svnt_plot <- ggplot(comm_svnt_data, aes(x = factor(1), y = i1_svnt_wt)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar(aes(x = factor(1), y = median_value_svnt, ymin = median_value_svnt, ymax = median_value_svnt), 
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
+  labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Community Post-Infection") + 
+  theme_bw(base_size = 12) + 
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+        plot.title = element_text(face = "bold", size = 14), 
+        axis.title = element_text(face = "bold"), 
+        axis.text.x = element_text(face = "bold"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.ticks = element_blank(), 
+        legend.position = "none", 
+        panel.border = element_blank(), 
+        axis.line = element_line(size = 0.5, color = "black"))
+
+print(comm_infection_svnt_plot)
+```
+
+
+##NEW PANEL CREATION 
+
+#ELISA 
+
+```{r}
+y_limits <- c(0, 6) 
+
+elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = "WT RBD ELISA (OD value)") + 
+  theme(axis.text.y = element_text(size = 10), 
+        axis.ticks.y = element_line(),          
+        axis.line.y = element_line())  
+
+comm_infection_elisa_plot <- comm_infection_elisa_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
+post_infection_elisa <- post_infection_elisa + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
+one_elisa_wt_plot <- one_elisa_wt_plot + 
+ scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())         
+
+two_elisa_wt_plot <- two_elisa_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())   
+
+three_elisa_wt_plot <- three_elisa_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + comm_infection_elisa_plot + 
+                                            post_infection_elisa + one_elisa_wt_plot + 
+                         two_elisa_wt_plot + 
+                         three_elisa_wt_plot) + 
+  plot_layout(ncol = 6) + 
+  plot_annotation(title = "WT RBD ELISA", 
+                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
+  theme(plot.background = element_blank(),
+        panel.border = element_blank(),    
+        plot.margin = margin(0, 0, 0, 0))
+
+print(elisa_wt_combined_plot_with_community)
+
+ggsave("elisa_wt_combined_plot_with_community.pdf", plot = elisa_wt_combined_plot_with_community, width = 24, height = 6)
+```
+
+
+#sVNT 
+```{r}
+y_limits <- c(0, 105)
+
+svnt_baseline_wt <- svnt_baseline_wt + scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = "WT sVNT Inhibition (%)") + 
+  theme(axis.text.y = element_text(size = 10), 
+        axis.ticks.y = element_line(),          
+        axis.line.y = element_line())   
+
+comm_infection_svnt_plot <- comm_infection_svnt_plot + 
+scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
+post_infection_svnt <- post_infection_svnt + 
+scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())
+
+one_svnt_wt_plot <- one_svnt_wt_plot + 
+scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())          
+
+two_svnt_wt_plot <- two_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) +  
+  theme(axis.text.y = element_blank(),  
+        axis.ticks.y = element_blank(),  
+        axis.line.y = element_blank())   
+
+three_svnt_wt_plot <- three_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+four_svnt_wt_plot <- four_svnt_wt_plot + 
+  scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
+  labs(y = NULL) + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank())
+
+svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + comm_infection_svnt_plot + post_infection_svnt + one_svnt_wt_plot + 
+                  two_svnt_wt_plot + 
+                  three_svnt_wt_plot + 
+                  four_svnt_wt_plot) + 
+  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 7) + plot_annotation(title = "WT sVNT", 
+                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
+  theme(plot.background = element_blank(),
+        plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        panel.border = element_blank(), 
+        plot.margin = margin(0, 0, 0, 0))
+
+print(svnt_wt_combined_plot_with_community)
+
+ggsave("svnt_wt_combined_plot_with_community.pdf", plot = svnt_wt_combined_plot_with_community, width = 24 , height = 6)
+```
+
