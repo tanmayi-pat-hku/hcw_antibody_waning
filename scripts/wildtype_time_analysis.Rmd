@@ -75,6 +75,16 @@ median_values_elisa <- two_dose_long_elisa %>%
 
 
 ```{r}
+elisa_wt_time_plot_2_counts <- two_dose_elisa_homologous %>%
+  group_by(two_dose_permutation) %>%
+  summarise(n = n_distinct(id), .groups = "drop")
+
+print(elisa_wt_time_plot_2_counts)
+
+elisa_wt_time_plot_2_counts <- with(elisa_wt_time_plot_2_counts, 
+                   paste("B: n =", n[two_dose_permutation == "1-1"], "\n",
+                         "S: n =", n[two_dose_permutation == "4-4"]))
+
 shade_df <- tibble(
   xmin = c(0.5, 1.5, 2.5),
   xmax = c(1.5, 2.5, 3.5),
@@ -126,6 +136,19 @@ elisa_wt_time_plot_2 <- ggplot() +
         legend.position = "none",
         panel.border = element_blank(),
         axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  ) +
+  geom_label(
+    aes(x = 0.5, y = 5.8, label = elisa_wt_time_plot_2_counts),
+    hjust = 0,  # Left-align
+    vjust = 1,  # Top-align
+    size = 3, 
+    fontface = "bold",  
+    color = "black",
+    fill = "white",  
+    label.padding = unit(0.3, "lines"),  
+    label.r = unit(0.15, "lines"),  
+    label.size = 0.3, 
+    family = "sans"  
   )
 
 elisa_wt_time_plot_2
@@ -161,13 +184,23 @@ median_values <- three_dose_long %>%
 
 
 ```{r}
+elisa_wt_time_plot_3_sample_counts <- three_dose_elisa_homologous %>%
+  group_by(three_dose_permutation) %>%
+  summarise(n = n_distinct(id), .groups = "drop")
+
+print(elisa_wt_time_plot_3_sample_counts)
+
+elisa_wt_time_plot_3_sample_counts <- with(elisa_wt_time_plot_3_sample_counts, 
+                   paste("B: n =", n[three_dose_permutation == "1-1-1"], "\n",
+                         "S: n =", n[three_dose_permutation == "4-4-4"]))
+
 shade_df <- tibble(
   xmin = c(0.5, 1.5, 2.5),
   xmax = c(1.5, 2.5, 3.5),
   alpha = c(0.02, 0.05, 0.08)
 )
 
-elisa_wt_time_plot <- ggplot() +
+elisa_wt_time_plot_3 <- ggplot() +
   geom_rect(
     data = shade_df,
     aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf, alpha = alpha),
@@ -192,9 +225,8 @@ elisa_wt_time_plot <- ggplot() +
   geom_point(
     data = median_values,
     aes(x = dose, y = median_value, color = three_dose_permutation),
-    size = 3
-  ) +
-  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E")) +
+    size = 3) + 
+  scale_color_manual(name = "Vaccine Type", values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E"), labels = c("1-1-1" = "B", "4-4-4" = "S")) +
   scale_x_discrete(labels = c("base_elisa" = "Baseline",
                               "v1_elisa_wt" = "Dose 1",
                               "v2_elisa_wt" = "Dose 2",
@@ -203,21 +235,42 @@ elisa_wt_time_plot <- ggplot() +
   labs(x = NULL,
        y = "WT RBD ELISA (OD value)") +
   theme_minimal() +
-   theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
-        plot.title = element_text(face = "bold", size = 14),
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
-        panel.grid.major = element_blank(),  
-        panel.grid.minor = element_blank(),  
-        axis.ticks = element_line(),  
-        legend.position = "none",
-        panel.border = element_blank(),
-        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+   theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line(),
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
+    legend.position = c(0.98, 0.98),  # Top-right corner
+    legend.justification = c("right", "top"),  # Anchor legend to top-right
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
+    legend.margin = margin(6, 6, 6, 6), 
+    legend.title = element_text(face = "bold", size = 10), 
+    legend.text = element_text(size = 8),  
+    legend.key.size = unit(0.4, "cm"),  # Smaller legend keys for a compact look
+    legend.key = element_rect(fill = "white", color = "transparent")
+  ) +
+  geom_label(
+    aes(x = 0.5, y = 5.8, label = elisa_wt_time_plot_3_sample_counts),
+    hjust = 0,  # Left-align
+    vjust = 1,  # Top-align
+    size = 3, 
+    fontface = "bold",  
+    color = "black",
+    fill = "white",  
+    label.padding = unit(0.3, "lines"),  
+    label.r = unit(0.15, "lines"),  
+    label.size = 0.3, 
+    family = "sans"  
   )
 
-elisa_wt_time_plot 
+elisa_wt_time_plot_3
 
-ggsave("elisa_wt_time_plot.pdf", plot = elisa_wt_time_plot, width = 10, height = 6)
+ggsave("elisa_wt_time_plot_3.pdf", plot = elisa_wt_time_plot_3, width = 10, height = 6)
 ```
 
 
@@ -253,6 +306,17 @@ median_values_svnt <- two_dose_long_svnt %>%
 ```
 
 ```{r}
+svnt_wt_time_plot_sample_counts <- two_dose_svnt_homologous %>%
+  group_by(two_dose_permutation) %>%
+  summarise(n = n_distinct(id), .groups = "drop")
+
+print(svnt_wt_time_plot_sample_counts)
+
+svnt_wt_time_plot_sample_counts <- with(svnt_wt_time_plot_sample_counts, 
+                   paste("B: n =", n[two_dose_permutation == "1-1"], "\n",
+                         "S: n =", n[two_dose_permutation == "4-4"]))
+
+
 svnt_wt_time_plot <- ggplot() +
   geom_rect(
     data = shade_df,
@@ -298,6 +362,19 @@ svnt_wt_time_plot <- ggplot() +
     legend.position = "none",
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  ) +
+  geom_label(
+    aes(x = 0.5, y = 105, label = svnt_wt_time_plot_sample_counts),
+    hjust = 0,  # Left-align
+    vjust = 1,  # Top-align
+    size = 3, 
+    fontface = "bold",  
+    color = "black",
+    fill = "white",  
+    label.padding = unit(0.3, "lines"),  
+    label.r = unit(0.15, "lines"),  
+    label.size = 0.3, 
+    family = "sans"  
   )
 
 svnt_wt_time_plot
@@ -337,6 +414,16 @@ median_values_svnt <- three_dose_long_svnt %>%
 
 
 ```{r}
+svnt_wt_time_plot_3_sample_counts <- three_dose_svnt_homologous %>%
+  group_by(three_dose_permutation) %>%
+  summarise(n = n_distinct(id), .groups = "drop")
+
+print(svnt_wt_time_plot_3_sample_counts)
+
+svnt_wt_time_plot_3_sample_counts <- with(svnt_wt_time_plot_3_sample_counts, 
+                   paste("B: n =", n[three_dose_permutation == "1-1-1"], "\n",
+                         "S: n =", n[three_dose_permutation == "4-4-4"]))
+
 svnt_wt_time_plot_3 <- ggplot() +
   geom_rect(
     data = shade_df,
@@ -393,6 +480,19 @@ svnt_wt_time_plot_3 <- ggplot() +
     legend.position = "none",
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  ) +
+  geom_label(
+    aes(x = 0.5, y = 105, label = svnt_wt_time_plot_3_sample_counts),
+    hjust = 0,  # Left-align
+    vjust = 1,  # Top-align
+    size = 3, 
+    fontface = "bold",  
+    color = "black",
+    fill = "white",  
+    label.padding = unit(0.3, "lines"),  
+    label.r = unit(0.15, "lines"),  
+    label.size = 0.3, 
+    family = "sans"  
   )
 
 svnt_wt_time_plot_3
@@ -401,7 +501,7 @@ svnt_wt_time_plot_3
 ##MAKING PANELS 
 
 ```{r}
-time_analysis_combined_plot <- (elisa_wt_time_plot_2 + elisa_wt_time_plot + 
+time_analysis_combined_plot <- (elisa_wt_time_plot_2 + elisa_wt_time_plot_3 + 
                          svnt_wt_time_plot + 
                          svnt_wt_time_plot_3) +
   plot_layout(ncol = 2) + 
