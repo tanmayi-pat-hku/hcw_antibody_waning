@@ -21,7 +21,6 @@ data <- read.csv("./data/data_03102025.csv")
 dict <- read_excel("./data/dict.xlsx")
 
 data <- data %>%
-  mutate(posrat_p1_date = as.Date(posrat_p1_date, format = "%Y-%m-%d")) %>%
   mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) 
 ```
 

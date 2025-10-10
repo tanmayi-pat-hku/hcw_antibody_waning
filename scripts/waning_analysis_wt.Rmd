@@ -243,20 +243,53 @@ four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since
     legend.margin = margin(6, 6, 6, 6), 
     legend.title = element_text(face = "bold", size = 10), 
     legend.text = element_text(size = 8),  
-    legend.key.size = unit(0.4, "cm"),  # Smaller legend keys for a compact look
+    legend.key.size = unit(0.2, "cm"),  # Smaller legend keys for a compact look
     legend.key = element_rect(fill = "white", color = "transparent")
   )
 
 four_dose_waning_elisa_plot
 ```
 
+#Five Dose sVNT
+```{r}
+five_dose_waning_svnt_plot <- ggplot(five_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
+  geom_point() +  # Add points for the scatterplot
+  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  # Add separate linear trendlines for each permutation
+  scale_color_discrete(name = "Vaccine Type") +  # Let ggplot automatically pick colors
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +  # Y-axis limits and breaks
+  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the fourth dose") +  # Axis labels
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),  # Remove major gridlines
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.ticks = element_line(),
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
+    legend.position = c(0.98, 0.98),  # Top-right corner
+    legend.justification = c("right", "top"),  # Anchor legend to top-right
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
+    legend.margin = margin(6, 6, 6, 6), 
+    legend.title = element_text(face = "bold", size = 10), 
+    legend.text = element_text(size = 8),  
+    legend.key.size = unit(0.2, "cm"),  # Smaller legend keys for a compact look
+    legend.key = element_rect(fill = "white", color = "transparent")
+  )
 
+# Display the plot
+print(five_dose_waning_svnt_plot)
+
+ggsave("five_dose_waning_svnt_plot.pdf", plot = five_dose_waning_svnt_plot, width = 10, height = 8)
+```
 
 
 #SVNT PANELS
 ```{r}
-svnt_wt_combined_waning_plot <- (two_dose_waning_svnt_plot + three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
-  plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 3) + plot_annotation(title = "WT sVNT", 
+svnt_wt_combined_waning_plot <- (two_dose_waning_svnt_plot + three_dose_waning_svnt_plot + four_dose_waning_svnt_plot + five_dose_waning_svnt_plot) + 
+  plot_layout(widths = c(2.0, 2.0, 2.0, 2.0), ncol = 4) + plot_annotation(title = "WT sVNT", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
@@ -265,7 +298,7 @@ svnt_wt_combined_waning_plot <- (two_dose_waning_svnt_plot + three_dose_waning_s
 
 print(svnt_wt_combined_waning_plot)
 
-ggsave("svnt_wt_combined_waning_plot.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 8)
+ggsave("svnt_wt_combined_waning_plot.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)
 ```
 
 #ELISA PANELS
@@ -284,7 +317,6 @@ ggsave("elisa_wt_combined_waning_plot.pdf", plot = elisa_wt_combined_waning_plot
 ```
 
 
-
 #Five Data 
 ```{r}
 five_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "elisa", permutation_col = "five_dose_permutation")
@@ -292,38 +324,4 @@ five_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose4_da
 five_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "svnt", permutation_col = "five_dose_permutation")
 ```
 
-
-```{r}
-five_dose_waning_svnt_plot <- ggplot(five_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
-  geom_point() +  # Add points for the scatterplot
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  # Add separate linear trendlines for each permutation
-  scale_color_discrete(name = "Vaccine Type") +  # Let ggplot automatically pick colors
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +  # Y-axis limits and breaks
-  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the fourth Dose") +  # Axis labels
-  theme_minimal() +  # Use a minimal theme
-  theme(
-    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
-    axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
-    panel.grid.major = element_blank(),  # Remove major gridlines
-    panel.grid.minor = element_blank(),  # Remove minor gridlines
-    axis.ticks = element_line(),
-    panel.border = element_blank(),
-    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
-    legend.position = c(0.98, 0.98),  # Top-right corner
-    legend.justification = c("right", "top"),  # Anchor legend to top-right
-    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
-    legend.margin = margin(6, 6, 6, 6), 
-    legend.title = element_text(face = "bold", size = 10), 
-    legend.text = element_text(size = 8),  
-    legend.key.size = unit(0.4, "cm"),  # Smaller legend keys for a compact look
-    legend.key = element_rect(fill = "white", color = "transparent")
-  )
-
-# Display the plot
-print(five_dose_waning_svnt_plot)
-
-ggsave("five_dose_waning_svnt_plot.pdf", plot = five_dose_waning_svnt_plot, width = 10, height = 8)
-```
 
