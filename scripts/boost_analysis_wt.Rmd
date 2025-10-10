@@ -25,30 +25,6 @@ data <- data %>%
   mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) 
 ```
 
-#Preliminary Count Analysis 
-```{r}
-dose_count <- data %>%
-  summarise(across(matches("^dose[1-8]_date$"), ~ sum(!is.na(.), na.rm = TRUE), .names = "count_{col}")) %>%
-  pivot_longer(everything(), names_to = "dose", values_to = "count")
-
-ggplot(dose_count, aes(x = dose, y = count)) +
-  geom_col(fill = "skyblue") +
-  geom_text(aes(label = count), vjust = -0.5, size = 3) +
-  scale_y_continuous(
-    limits = c(0, 2000),
-    breaks = seq(0, 2000, by = 250),
-    minor_breaks = seq(0, 2000, by = 50),
-    expand = c(0, 0.02)
-  ) +
-  labs(title = "Number of Participants by Dose", x = "Dose", y = "Count") +
-  theme_minimal() +
-  theme(
-    panel.grid.major.y = element_line(color = "gray80"),
-    panel.grid.minor.y = element_line(color = "gray92"),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
-```
-
 #Load Vaccine Dosages 
 ```{r}
 data <- data %>%
@@ -77,41 +53,17 @@ five_dose_data <- data %>%
   filter(!grepl("NA", five_dose_permutation))
 ```
 
-#Permutation Counts
-```{r}
-one_permutation_count <- one_dose_data %>%
-  group_by(one_dose_permutation) %>% 
-  summarise(count = n(), .groups = 'drop')
-
-two_permutation_count <- two_dose_data %>%
-  group_by(two_dose_permutation) %>% 
-  summarise(count = n(), .groups = 'drop')
-
-three_permutation_count <- three_dose_data %>%
-  group_by(three_dose_permutation) %>% 
-  summarise(count = n(), .groups = 'drop')
-
-four_permutation_count <- four_dose_data %>%
-  group_by(four_dose_permutation) %>% 
-  summarise(count = n(), .groups = 'drop')
-
-five_permutation_count <- five_dose_data %>%
-  group_by(five_dose_permutation) %>% 
-  summarise(count = n(), .groups = 'drop')
-```
-
-#Antibody Value Measurements
+#Source Antibody Value Measurement Function
 ```{r}
 source("scripts/fc_vaccine_perm.R")
 ```
 
-#Baseline Value Measurements
+#Source Baseline Value Measurements Function 
 ```{r}
 source("scripts/fc_get_baselines.R")
 ```
 
-
-#Baseline Value Assessment 
+#Source Baseline Value Assessment 
 ```{r}
 baseline_elisa <- get_baselines(data, "elisa_wt")  
 baseline_svnt <- get_baselines(data, "svnt_wt")    
@@ -119,9 +71,8 @@ baseline_svnt <- get_baselines(data, "svnt_wt")
 print(head(baseline_elisa))
 print(head(baseline_svnt))
 ```
-#Find Common Individuals 
 
-Find Individuals that have data for BASELINE + AND ALL DOSES 
+#Find Individuals that have data for BASELINE + AND ALL DOSES 
 ```{r}
 three_dose_data$base_elisa <- baseline_elisa$baseline_value[match(three_dose_data$id, baseline_elisa$id)] 
 
@@ -221,12 +172,13 @@ svnt_baseline_wt
 calculate_earliest_date <- function(data) {
   data <- data %>%
     mutate(earliest_posdate = pmin(posdate_p1, posdate_p2, posdate_p3, posdate_p4, na.rm = TRUE)) %>%
-    filter(!is.na(earliest_posdate))  # Remove rows with NA earliest_posdate
+    filter(!is.na(earliest_posdate)) 
   return(data)
 }
 
 first_infection_data <- calculate_earliest_date(data)
 ```
+
 
 ```{r}
 extract_valid_dates_with_weights <- function(data) {

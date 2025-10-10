@@ -33,3 +33,9 @@ get_baselines <- function(data, value_type, group_vars = NULL) {
     ) %>%
     select(-value_index)
 }
+
+
+#data: A dataframe containing multiple columns, including date columns and value columns associated with different indices.
+#value_type: A string that specifies the type of value to extract. This is used to match the corresponding columns in the dataframe.
+#group_vars: An optional parameter that allows grouping of the data based on specified variables. If not provided, the function groups by all columns except for certain key columns.
+
