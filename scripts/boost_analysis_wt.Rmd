@@ -93,8 +93,8 @@ median_svnt <- baseline_svnt %>%
   summarise(median_value = median(baseline_value, na.rm = TRUE), .groups = 'drop')
 
 
-baseline_elisa$elisa_wt <- as.numeric(baseline_elisa$baseline_value)
-baseline_svnt$svnt_wt <- as.numeric(baseline_svnt$baseline_value)
+baseline_elisa$baseline_value <- as.numeric(baseline_elisa$baseline_value)
+baseline_svnt$baseline_value <- as.numeric(baseline_svnt$baseline_value)
 ```
 
 
@@ -749,28 +749,4 @@ print(elisa_wt_combined_plot)
 ggsave("elisa_wt_combined_plot.pdf", plot = elisa_wt_combined_plot, width = 20, height = 6)
 ```
 
-
-
-#Instructions
-```{r}
-# HCW immunoassay plots - SAMPLE
-# - Ancestral (Wuhan) vs Omicron RBD ELISA
-# Author: Wey Wen Lim
-# Date: September 30, 2022
-# Last updated: September 30, 2022
-
-# Load data ----
-# **NOTE: THIS PLOTTING DATASET IS PRE-PROCESSED FROM THE DATASET AVAILABLE IN THE DATA FOLDER:
-# STEPS:
-# 1. Identify baseline samples from biannual sampling rounds (we call it "routine" for short and use the pre-fix r1..11) - vaccines came in around mid-r2
-# 2. Group participants into groups based on their vaccination history 
-#    (e.g., for baseline levels, based on participants who eventually got the mRNA (by BioNTech, B) or inactivated (by SinoVac, S) vaccine as their first two doses,
-#     for dose 1-4, combine information from each doseX_brand variable, 1-1-1 = B-B-B, 4-4-4 = S-S-S, 1-1-4 = B-B-S, 4-4-1 = S-S-B and so on. 
-#     Am open to suggestions to change this labelling system to better ones)
-# 3. Plot antibody levels 21-42 days after each dose - this doesn't need to be limited to post-vaccination samples. Some "routine" samples also fall within this time frame
-# 4. For participants with antibody levels in step 3, identify a later sample (routine if possible) to plot the waning patterns
-
-# Script ends ----
-
-```
 

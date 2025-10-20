@@ -17,7 +17,7 @@ shelf(patchwork)
 
 #Load Data Frame 
 ```{r}
-community_data <- read.csv("./data/data_20251007.csv") 
+community_data <- read.csv("./data/20251007_hcw_posvax_abwaning.csv") 
 community_data
 ```
 
