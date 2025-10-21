@@ -52,3 +52,16 @@ get_measurements_in_interval <- function(data, first_dose_col, second_dose_col, 
   
   return(result)
 }
+
+
+#Column Existence Check: Verifies that the specified columns for the first dose, second dose, and permutation are present in the data; raises an error if any are missing.
+
+#Filter Missing Values: Eliminates rows with missing values in the specified columns to ensure clean data for analysis.
+
+#Determine Weight Column: Based on the weight_type parameter, identifies the appropriate weight column suffix (_elisa_wt or _svnt_wt); raises an error for invalid types.
+
+#Loop Through Dates: Iterates through date columns (r1_date to r11_date), filtering for dates within the specified dose interval and calculating the number of days since the first dose.
+
+#Filter Results: Combines results into a final data frame, filtering out rows with NA weights and excluding positive cases based on specific conditions related to posdate_p1 to posdate_p4.
+
+#Includes multiple points for each individual

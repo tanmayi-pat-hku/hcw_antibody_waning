@@ -39,3 +39,15 @@ get_baselines <- function(data, value_type, group_vars = NULL) {
 #value_type: A string that specifies the type of value to extract. This is used to match the corresponding columns in the dataframe.
 #group_vars: An optional parameter that allows grouping of the data based on specified variables. If not provided, the function groups by all columns except for certain key columns.
 
+#Condition: r_date < v1_date
+
+
+#Define Patterns: Sets regex patterns to identify date columns, value columns based on the specified value_type, and to capture indices.
+
+#Reshape Data: Converts the data frame into a long format twice: first for dates and then for values, creating new columns for each.
+
+#Filter Data: Applies conditions to retain rows where the date corresponds to the value index, ensuring dates are valid, earlier than v1_date, and values are non-NA.
+
+#Group Data: Groups the data by specified variables (if provided) or by all other relevant columns to prepare for extraction.
+
+#Extract and Rename: Selects the earliest date, retrieves its corresponding value, renames the columns for clarity, and returns a clean data frame with baseline information.

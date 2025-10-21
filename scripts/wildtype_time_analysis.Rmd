@@ -26,7 +26,7 @@ data <- data %>%
 
 #Baseline Value Measurements
 ```{r}
-source("scripts/fc_get_baselines.R")
+source("scripts/helper/fc_get_baselines.R")
 ```
 
 #Baseline Elisa 
@@ -80,6 +80,10 @@ elisa_wt_time_plot_2_sample_counts <- result_2_dose_elisa$long_data %>%
   group_by(two_dose_permutation) %>%
   summarise(n = n_distinct(id), .groups = "drop")
 
+elisa_wt_time_plot_2_sample_counts <- with(elisa_wt_time_plot_2_sample_counts, 
+                   paste("B: n =", n[two_dose_permutation == "1-1"], "\n",
+                         "S: n =", n[two_dose_permutation == "4-4"]))
+
 print(elisa_wt_time_plot_2_sample_counts)
 
 elisa_wt_time_plot_2 <- ggplot() +
@@ -126,7 +130,7 @@ elisa_wt_time_plot_2 <- ggplot() +
         axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   ) +
   geom_label(
-    aes(x = 0.5, y = 5.8, label = elisa_wt_time_plot_2_counts),  # Ensure this variable is defined
+    aes(x = 0.5, y = 5.8, label = elisa_wt_time_plot_2_sample_counts),  # Ensure this variable is defined
     hjust = 0, vjust = 1, size = 3, fontface = "bold", color = "black",
     fill = "white", label.padding = unit(0.3, "lines"),  
     label.r = unit(0.15, "lines"), label.size = 0.3, family = "sans"

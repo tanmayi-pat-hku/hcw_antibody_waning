@@ -49,3 +49,23 @@ process_dose_data <- function(data, baseline_data, value_type, dose_count, permu
   
   return(list(long_data = long_data, median_values = median_values))
 }
+
+
+#Define Column Names: Constructs column names for baseline and value weights based on the specified value_type, including base_col, v1_col, and v2_col, and optionally v3_col if dose_count is 3.
+
+#Add Baseline Values: Merges baseline values from baseline_data into data using the individual IDs to match corresponding baseline values.
+
+#Filter Data: Creates a homologous_data data frame by filtering out rows with NA values in essential columns and applying conditions based on the dose_count and permutation_col.
+
+#Reshape to Long Format: Converts the filtered data into a long format where each measurement corresponds to its dose type, while conditionally including the third dose if applicable.
+
+#Calculate Median Values: Computes the median values for each dose and permutation category, returning both the reshaped long data and the calculated median values in a list.
+
+
+#A data frame in long format that includes:
+  #Individual IDs (id).
+#Baseline values (base_col).
+#Value weights for the first, second, and (if applicable) third doses.
+#A new column indicating the dose type (dose).
+#A color coding based on the permutation_col values.
+

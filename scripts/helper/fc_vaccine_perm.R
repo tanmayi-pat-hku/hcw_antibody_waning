@@ -47,6 +47,17 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
 #Parameters:
 #df: The input dataframe containing the data to summarize.
 #perm_col: The column representing permutations of vaccine brands (e.g., one_dose_permutation, two_dose_permutation).
-#response_col: The column representing the response variable (e.g., vaccine effectiveness or some measurable outcome).
+#response_col: The column representing the response variable 
 #min_n: Minimum number of entries required for a permutation to be considered valid (default is 5).
 #dose_label: A label for the dose count (default is "4 Doses").
+
+#Output
+#plot_data: The filtered and structured data frame ready for analysis.
+#valid_perms: The data frame with only valid permutations.
+#valid_perm_count: A count of valid entries for each permutation.
+#medians: The calculated median values for the response variable by permutation.
+#perms: The levels of valid permutations.
+#n_levels: The total number of unique permutation levels.
+#mid_x: A calculated midpoint for plotting purposes.
+
+
