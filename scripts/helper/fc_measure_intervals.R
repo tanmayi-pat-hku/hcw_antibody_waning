@@ -35,7 +35,7 @@ get_measurements_in_interval <- function(data, first_dose_col, second_dose_col, 
                  .data[[r_date_col]] >= .data[[first_dose_col]] & 
                  .data[[r_date_col]] <= .data[[second_dose_col]]) %>%
         mutate(days_since_dose1 = as.numeric(difftime(.data[[r_date_col]], .data[[first_dose_col]], units = "days"))) %>%
-        select(id, measure_date = .data[[r_date_col]], weight = .data[[weight_col]], days_since_dose1, permutation = .data[[permutation_col]])
+        select(id, measure_date = .data[[r_date_col]], weight = .data[[weight_col]], days_since_dose1, permutation = .data[[permutation_col]], dose1_brand, dose2_brand, dose3_brand, dose4_brand, dose5_brand, dose6_brand)
       
       #Append the temporary result to the final result
       result <- rbind(result, temp_result)

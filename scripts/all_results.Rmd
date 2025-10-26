@@ -28,6 +28,8 @@ data <- data %>%
     four_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, sep = "-"),
     five_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, dose5_brand, sep = "-")
   )
+
+community_data <- read.csv("./data/2021_community_elisa_sVNT.csv")
 ```
 
 #Load Label Strings for Permutation 1 and 2 
@@ -37,28 +39,102 @@ two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
 ```
 
 
-
 #########################################
 
-## Community Post-Infection Analysis 2022 
+## Cohort Post-Infection Analysis 2022 
 
 #ELISA Values 
 #filters for NA in i1_elisa_wt 
 #calculates median ELISA post infection value for crossbar 
 
 ```{r}
-community_data_elisa <- data %>%
+#cohort dataset #2022
+cohort_data_elisa <- data %>%
   filter(!is.na(i1_elisa_wt)) 
 
-community_data_median_elisa <- community_data_elisa %>%
+cohort_data_median_elisa <- cohort_data_elisa %>%
   summarize(median = median(i1_elisa_wt, na.rm = TRUE), .groups = 'drop')
 ```
 
 
-#Plot post-infection ELISA Value for 2022
+#Plot post-infection Cohort ELISA Value for 2022
 ```{r}
-comm_infection_elisa_plot <- ggplot(community_data_elisa, aes(x = factor(1), y = i1_elisa_wt)) + 
+cohort_infection_elisa_plot <- ggplot(cohort_data_elisa, aes(x = factor(1), y = i1_elisa_wt)) + 
   geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar(data = cohort_data_median_elisa, aes(x = factor(1), y = median, ymin = median, ymax = median), 
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
+  labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Cohort Post-Infection") + 
+  theme_bw(base_size = 12) + 
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+        plot.title = element_text(face = "bold", size = 14), 
+        axis.title = element_text(face = "bold"), 
+        axis.text.x = element_text(face = "bold"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.ticks = element_blank(), 
+        legend.position = "none", 
+        panel.border = element_blank(), 
+        axis.line = element_line(size = 0.5, color = "black"))
+
+print(cohort_infection_elisa_plot)
+```
+
+#sVNT Values Cohort Post Infection 2022 
+#filters for NA in i1_svnt_wt 
+#calculates median svnt post infection value for crossbar 
+
+```{r}
+cohort_data_svnt <- data %>%
+  filter(!is.na(i1_svnt_wt)) 
+
+cohort_data_median_svnt <- cohort_data_svnt %>%
+  summarize(median = median(i1_svnt_wt, na.rm = TRUE), .groups = 'drop')
+```
+
+#Plot post-infection Cohort sVNT Value for 2022
+```{r}
+cohort_infection_svnt_plot <- ggplot(cohort_data_svnt, aes(x = factor(1), y = i1_svnt_wt)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  geom_crossbar(data = cohort_data_median_svnt, aes(x = factor(1), y = median, ymin = median, ymax = median), 
+                 width = 0.5, colour = "black", size = 0.5) +
+  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
+  labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Cohort Post-Infection") + 
+  theme_bw(base_size = 12) + 
+  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+        plot.title = element_text(face = "bold", size = 14), 
+        axis.title = element_text(face = "bold"), 
+        axis.text.x = element_text(face = "bold"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.ticks = element_blank(), 
+        legend.position = "none", 
+        panel.border = element_blank(), 
+        axis.line = element_line(size = 0.5, color = "black"))
+
+print(cohort_infection_svnt_plot)
+```
+
+#########################################
+## Community Post-Infection Analysis 2021
+
+##Load dataframes 
+
+#ELISA
+```{r}
+community_data_elisa <- community_data %>%
+  filter(!is.na(elisa)) 
+
+community_data_median_elisa <- community_data_elisa %>%
+  summarize(median = median(elisa, na.rm = TRUE), .groups = 'drop')
+```
+
+#Community Plot for sVNT 2021
+```{r}
+community_infection_elisa_plot <- ggplot(community_data_elisa, aes(x = factor(1), y = elisa)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "deeppink") + 
   geom_crossbar(data = community_data_median_elisa, aes(x = factor(1), y = median, ymin = median, ymax = median), 
                  width = 0.5, colour = "black", size = 0.5) +
   scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
@@ -76,25 +152,21 @@ comm_infection_elisa_plot <- ggplot(community_data_elisa, aes(x = factor(1), y =
         panel.border = element_blank(), 
         axis.line = element_line(size = 0.5, color = "black"))
 
-print(comm_infection_elisa_plot)
+print(community_infection_elisa_plot)
 ```
-
-#sVNT Values Post Infection 2022 
-#filters for NA in i1_svnt_wt 
-#calculates median svnt post infection value for crossbar 
-
+#sVNT
 ```{r}
-community_data_svnt <- data %>%
-  filter(!is.na(i1_svnt_wt)) 
+community_data_svnt <- community_data %>%
+  filter(!is.na(sVNT)) 
 
 community_data_median_svnt <- community_data_svnt %>%
-  summarize(median = median(i1_svnt_wt, na.rm = TRUE), .groups = 'drop')
+  summarize(median = median(sVNT, na.rm = TRUE), .groups = 'drop')
 ```
 
-
+#Community Plot for sVNT 2021
 ```{r}
-comm_infection_svnt_plot <- ggplot(community_data_svnt, aes(x = factor(1), y = i1_svnt_wt)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+community_infection_svnt_plot <- ggplot(community_data_svnt, aes(x = factor(1), y = sVNT)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "deeppink") + 
   geom_crossbar(data = community_data_median_svnt, aes(x = factor(1), y = median, ymin = median, ymax = median), 
                  width = 0.5, colour = "black", size = 0.5) +
   scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
@@ -112,10 +184,12 @@ comm_infection_svnt_plot <- ggplot(community_data_svnt, aes(x = factor(1), y = i
         panel.border = element_blank(), 
         axis.line = element_line(size = 0.5, color = "black"))
 
-print(comm_infection_svnt_plot)
+print(community_infection_svnt_plot)
 ```
 
+
 #########################################
+
 
 ## Boost Analysis
 
@@ -236,74 +310,6 @@ svnt_baseline_wt <- ggplot() +
   )
 
 svnt_baseline_wt
-```
-
-
-#########################################
-
-#POST INFECTION in Cohort 
-
-#Source Earliest Date Function
-```{r}
-source("scripts/helper/fc_earliest_date.R")
-```
-
-
-#Calculate Earliest Date Data 
-```{r}
-first_infection_data <- calculate_earliest_date(data)
-```
-
-#Source Extract Date Function
-```{r}
-source("scripts/helper/fc_extract_dates.R")
-```
-
-#Extract Valid dates 
-```{r}
-valid_dates_result <- extract_valid_dates_with_weights(first_infection_data)
-```
-
-#sVNT cohort Post infection 1 results 
-```{r}
-median_svnt <- median(valid_dates_result$rX_svnt_wt, na.rm = TRUE) 
-median_df_svnt <- data.frame(x = factor(1), median = median_svnt)
-
-post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt_wt)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
-  geom_crossbar( data = median_df_svnt, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
-  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Cohort Post-Infection") + 
-  theme_bw(base_size = 12) + 
-  theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
-         plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
-         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-         axis.ticks = element_blank(), legend.position = "none", 
-         panel.border = element_blank(), 
-         axis.line = element_line(size = 0.5, color = "black") )
-
-post_infection_svnt
-```
-
-#ELISA cohort Post infection 1 results
-```{r}
-median_elisa<- median(valid_dates_result$rX_elisa_wt, na.rm = TRUE) 
-median_df_elisa <- data.frame(x = factor(1), median = median_elisa)
-
-post_infection_elisa <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_elisa_wt)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
-  geom_crossbar(data = median_df_elisa, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
-  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Cohort Post-Infection") + 
-  theme_bw(base_size = 12) + 
-  theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
-         plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
-         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-         axis.ticks = element_blank(), legend.position = "none", 
-         panel.border = element_blank(), 
-         axis.line = element_line(size = 0.5, color = "black") )
-
-post_infection_elisa
 ```
 
 
@@ -669,14 +675,14 @@ elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, b
         axis.ticks.y = element_line(),          
         axis.line.y = element_line())  
 
-comm_infection_elisa_plot <- comm_infection_elisa_plot + 
+cohort_infection_elisa_plot <- cohort_infection_elisa_plot + 
   scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
   labs(y = NULL) +  
   theme(axis.text.y = element_blank(),  
         axis.ticks.y = element_blank(),  
         axis.line.y = element_blank())
 
-post_infection_elisa <- post_infection_elisa + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+community_infection_elisa_plot <- community_infection_elisa_plot + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
   labs(y = NULL) +  
   theme(axis.text.y = element_blank(),  
         axis.ticks.y = element_blank(),  
@@ -703,8 +709,8 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + comm_infection_elisa_plot + 
-                                            post_infection_elisa + one_elisa_wt_plot + 
+elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + cohort_infection_elisa_plot + 
+                                            community_infection_elisa_plot + one_elisa_wt_plot + 
                          two_elisa_wt_plot + 
                          three_elisa_wt_plot) + 
   plot_layout(ncol = 6) + 
@@ -729,14 +735,14 @@ svnt_baseline_wt <- svnt_baseline_wt + scale_y_continuous(limits = y_limits, bre
         axis.ticks.y = element_line(),          
         axis.line.y = element_line())   
 
-comm_infection_svnt_plot <- comm_infection_svnt_plot + 
+cohort_infection_svnt_plot <- cohort_infection_svnt_plot + 
 scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
   labs(y = NULL) +  
   theme(axis.text.y = element_blank(),  
         axis.ticks.y = element_blank(),  
         axis.line.y = element_blank())
 
-post_infection_svnt <- post_infection_svnt + 
+community_infection_svnt_plot <- community_infection_svnt_plot + 
 scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
   labs(y = NULL) +  
   theme(axis.text.y = element_blank(),  
@@ -771,7 +777,7 @@ four_svnt_wt_plot <- four_svnt_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + comm_infection_svnt_plot + post_infection_svnt + one_svnt_wt_plot + 
+svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + cohort_infection_svnt_plot + community_infection_svnt_plot + one_svnt_wt_plot + 
                   two_svnt_wt_plot + 
                   three_svnt_wt_plot + 
                   four_svnt_wt_plot) + 
@@ -1190,7 +1196,6 @@ svnt_wt_time_plot_3_sample_counts
 ```
 
 #########################################
-
 # Waning Analysis 
 
 #Source Measure Interval function 
@@ -1198,86 +1203,12 @@ svnt_wt_time_plot_3_sample_counts
 source("scripts/helper/fc_measure_intervals.R")
 ```
 
-#Two Dose Data Creation 
-#sVNT and ELISA
-```{r}
-two_dose_waning_elisa <- get_measurements_in_interval(two_dose_data, "dose1_date", "dose2_date", weight_type = "elisa", permutation_col = "two_dose_permutation") %>%
-  filter(permutation %in% c("4-4", "1-1"))
-
-two_dose_waning_svnt <- get_measurements_in_interval(two_dose_data, "dose1_date", "dose2_date", weight_type = "svnt", permutation_col = "two_dose_permutation") %>%
-  filter(permutation %in% c("4-4", "1-1"))
-
-elisa_participant_count_2 <- two_dose_waning_elisa %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "ELISA")
-
-svnt_participant_count_2 <- two_dose_waning_svnt %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "SVNT")
-
-participant_counts_2 <- bind_rows(elisa_participant_count_2 , svnt_participant_count_2)
-
-print(participant_counts_2)
-```
-
-##Two Dose ELISA Plot 
-```{r}
-two_dose_waning_elisa_plot <- ggplot(two_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = permutation)) +
-  geom_point() +  
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  
-  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +  
-  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +  
-  labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the first dose") +  
-  theme_minimal() +  
-  theme(
-    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  
-    axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
-    panel.grid.major = element_blank(),  
-    panel.grid.minor = element_blank(), 
-    axis.ticks = element_line(),
-    legend.position = "none",  
-    panel.border = element_blank(),
-    axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
-  )
-
-two_dose_waning_elisa_plot
-```
-
-##Two Dose sVNT Plot 
-```{r}
-two_dose_waning_svnt_plot <- ggplot(two_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
-  geom_point() +  
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  
-  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +  
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +  
-  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the first dose") +  
-  theme_minimal() +  
-  theme(
-    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  
-    axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(), 
-    axis.ticks = element_line(),
-    legend.position = "none",  
-    panel.border = element_blank(),
-    axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
-  )
-
-two_dose_waning_svnt_plot
-```
-
-
 #Three Dose Data Creation
 #sVNT and ELISA
 ```{r}
-three_dose_waning_elisa <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "elisa", permutation_col = "three_dose_permutation") %>%
-  filter(permutation %in% c("4-4-4", "1-1-1"))
+three_dose_waning_elisa <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "elisa", permutation_col = "three_dose_permutation") %>% filter(dose3_brand %in% c("1", "4"))
 
-three_dose_waning_svnt <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>% filter(permutation %in% c("4-4-4", "1-1-1"))
+three_dose_waning_svnt <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>% filter(dose3_brand %in% c("1", "4"))
 
 elisa_participant_count_3 <- three_dose_waning_elisa %>%
   summarise(num_participants = n_distinct(id)) %>%
@@ -1294,10 +1225,13 @@ print(participant_counts_3)
 
 #Three Dose ELISA Plot
 ```{r}
-three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = permutation)) +
+three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose3_brand), shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "circle", "triangle"))) +
   geom_point() +  
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) + 
-  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E")) + 
+  #geom_smooth(aes(group = dose3_brand), method = "lm", se = TRUE) + 
+  
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) + 
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
   labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the second dose") +  
   theme_minimal() +  # Use a minimal theme
@@ -1315,14 +1249,18 @@ three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_sin
   )
 
 three_dose_waning_elisa_plot
+
+
 ```
 
 #Three Dose sVNT Plot
 ```{r}
-three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
+three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = as.factor(dose3_brand), shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "circle", "triangle"))) +
   geom_point() +  
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) + 
-  scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E")) +
+  #geom_smooth(aes(group = dose3_brand), method = "lm", se = TRUE) + 
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) + 
   scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + 
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the second dose") +  
   theme_minimal() +  # Use a minimal theme
@@ -1346,10 +1284,10 @@ three_dose_waning_svnt_plot
 #sVNT and ELISA
 ```{r}
 four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "elisa", permutation_col = "four_dose_permutation") %>%
-  filter(permutation %in% c("4-4-4-4", "1-1-1-1"))
+  filter(dose4_brand %in% c("4", "1"))
 
 four_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "svnt", permutation_col = "four_dose_permutation") %>%
-  filter(permutation %in% c("4-4-4-4", "1-1-1-1"))
+  filter(dose4_brand %in% c("4", "1"))
 
 elisa_participant_count_4 <- four_dose_waning_elisa %>%
   summarise(num_participants = n_distinct(id)) %>%
@@ -1366,10 +1304,12 @@ print(participant_counts_4)
 
 ##Four Dose SVNT Plot  
 ```{r}
-four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
+four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = as.factor(dose4_brand), shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "circle", "triangle"))) +
   geom_point() +  
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +
-  scale_color_manual(name = "Vaccine Type", values = c("1-1-1-1" = "#1F77B4", "4-4-4-4" = "#FF7F0E"), labels = c("1-1-1-1" = "B", "4-4-4-4" = "S")) +
+  #geom_smooth(aes(group = dose4_brand), method = "lm", se = TRUE) + 
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) +
   scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the third dose") +
   theme_minimal() +  
@@ -1391,17 +1331,17 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     legend.text = element_text(size = 8),  
     legend.key.size = unit(0.4, "cm"),  
     legend.key = element_rect(fill = "white", color = "transparent")
-  )
+  ) + guides(shape = "none")
 
 four_dose_waning_svnt_plot
 ```
 
 ##Four Dose ELISA Plot 
 ```{r}
-four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = permutation)) +
+four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose4_brand), shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "circle", "triangle"))) +
   geom_point() + 
-  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  # Add separate linear trendlines for each permutation
-  scale_color_manual(name = "Vaccine Type", values = c("1-1-1-1" = "#1F77B4", "4-4-4-4" = "#FF7F0E"), labels = c("1-1-1-1" = "B", "4-4-4-4" = "S")) +
+  #geom_smooth(aes(group = dose4_brand), method = "lm", se = TRUE) +  # Add separate linear trendlines for each permutation
+  scale_color_manual(name = "Vaccine Type", values = c("1" = "#1F77B4", "4" = "#FF7F0E"), labels = c("1" = "B", "4" = "S")) +
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +  # Y-axis limits and breaks
   labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the third dose") +  # Axis labels
   theme_minimal() + 
@@ -1423,17 +1363,20 @@ four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since
     legend.text = element_text(size = 8),  
     legend.key.size = unit(0.2, "cm"),  # Smaller legend keys for a compact look
     legend.key = element_rect(fill = "white", color = "transparent")
-  )
+  ) + guides(shape = "none")
 
 four_dose_waning_elisa_plot
 ```
 
+#Not enough data for 4 and 1 (dose 5)
 #Five Dose Data Creation 
 #sVNT and ELISA
 ```{r}
-five_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "elisa", permutation_col = "five_dose_permutation")
+five_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "elisa", permutation_col = "five_dose_permutation") %>%
+  filter(dose5_brand %in% c("4", "1"))
 
-five_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "svnt", permutation_col = "five_dose_permutation")
+five_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose4_date", "dose5_date", weight_type = "svnt", permutation_col = "five_dose_permutation") %>%
+  filter(dose5_brand %in% c("4", "1"))
 ```
 
 #Five Dose sVNT
@@ -1473,8 +1416,8 @@ print(five_dose_waning_svnt_plot)
 
 #SVNT PANELS
 ```{r}
-svnt_wt_combined_waning_plot <- (two_dose_waning_svnt_plot + three_dose_waning_svnt_plot + four_dose_waning_svnt_plot + five_dose_waning_svnt_plot) + 
-  plot_layout(widths = c(2.0, 2.0, 2.0, 2.0), ncol = 4) + plot_annotation(title = "WT sVNT", 
+svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
+  plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 2) + plot_annotation(title = "WT sVNT", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
@@ -1486,10 +1429,11 @@ print(svnt_wt_combined_waning_plot)
 ggsave("svnt_wt_combined_waning_plot.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)
 ```
 
+
 #ELISA PANELS
 ```{r}
-elisa_wt_combined_waning_plot <- (two_dose_waning_elisa_plot + three_dose_waning_elisa_plot + four_dose_waning_elisa_plot) + 
-  plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 3) + plot_annotation(title = "WT RBD ELISA", 
+elisa_wt_combined_waning_plot <- (three_dose_waning_elisa_plot + four_dose_waning_elisa_plot) + 
+  plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 2) + plot_annotation(title = "WT RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
@@ -1500,3 +1444,286 @@ print(elisa_wt_combined_waning_plot)
 
 ggsave("elisa_wt_combined_waning_plot.pdf", plot = elisa_wt_combined_waning_plot, width = 15, height = 8)
 ```
+
+# Time of Booster Delivery
+
+#Source Measure Interval function 
+```{r}
+source("scripts/helper/fc_between_doses.R")
+```
+
+#Prepare Datasets 
+```{r}
+# Call the function for doses 2 and 3
+dose_2_3 <- get_days_between_doses(three_dose_data, first_dose_col = "v2_date", second_dose_col = "v3_date" , permutation_col = "three_dose_permutation")
+
+dose_2_3_elisa <- dose_2_3 %>% filter(!is.na(v3_elisa_wt)) %>%  filter(dose3_brand %in% c(1, 4))
+
+dose_2_3_svnt <- dose_2_3 %>% filter(!is.na(v3_svnt_wt)) %>%  filter(dose3_brand %in% c(1, 4))
+
+# Call the function for doses 3 and 4
+dose_3_4 <- get_days_between_doses(four_dose_data, first_dose_col = "v3_date", second_dose_col = "v4_date", permutation_col = "four_dose_permutation")
+
+#No values
+dose_3_4_elisa <- dose_3_4 %>% filter(!is.na(v4_elisa_wt)) %>%  filter(dose4_brand %in% c(1, 4))
+
+dose_3_4_svnt <- dose_3_4 %>% filter(!is.na(v4_svnt_wt)) %>%  filter(dose4_brand %in% c(1, 4))
+```
+
+# Between Dose 2 - 3 Plot 
+
+#ELISA
+```{r}
+dose_2_3_elisa_plot <- ggplot(dose_2_3_elisa, aes(x = days_between_doses, y = v3_elisa_wt, color = factor(dose3_brand))) +
+  geom_point() + 
+  geom_smooth(aes(group = factor(dose3_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) +
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +  # Y-axis limits and breaks
+  labs(x = "Days Between Doses", y = "WT RBD ELISA (OD value)", title = "Third Dose Date") +  # Axis labels
+  theme_minimal() + 
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank(), 
+    axis.ticks = element_line(),
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
+    legend.position = c(0.98, 0.98),  
+    legend.justification = c("right", "top"),  
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
+    legend.margin = margin(6, 6, 6, 6), 
+    legend.title = element_text(face = "bold", size = 10), 
+    legend.text = element_text(size = 8),  
+    legend.key.size = unit(0.2, "cm"),  
+    legend.key = element_rect(fill = "white", color = "transparent")
+  )
+
+print(dose_2_3_elisa_plot)
+```
+
+#sVNT 
+```{r}
+dose_2_3_svnt_plot <- ggplot(dose_2_3_svnt, aes(x = days_between_doses, y = v3_svnt_wt, color = factor(dose3_brand))) +
+  geom_point() + 
+  geom_smooth(aes(group = factor(dose3_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Third Dose Date") +  # Axis labels
+  theme_minimal() + 
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank(), 
+    axis.ticks = element_line(),
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
+    legend.position = c(0.98, 0.98),  
+    legend.justification = c("right", "top"),  
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
+    legend.margin = margin(6, 6, 6, 6), 
+    legend.title = element_text(face = "bold", size = 10), 
+    legend.text = element_text(size = 8),  
+    legend.key.size = unit(0.2, "cm"),  
+    legend.key = element_rect(fill = "white", color = "transparent")
+  )
+
+print(dose_2_3_svnt_plot)
+```
+
+# Between Dose 3 - 4 Plot 
+
+#Not enough data for ELISA post Dose 3 
+
+#sVNT 
+```{r}
+dose_3_4_svnt_plot <- ggplot(dose_3_4_svnt, aes(x = days_between_doses, y = v4_svnt_wt, color = factor(dose4_brand))) +
+  geom_point() + 
+  geom_smooth(aes(group = factor(dose4_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
+  scale_color_manual(name = "Vaccine Type", 
+                     values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
+                     labels = c("1" = "B", "4" = "S")) +
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Fourth Dose Date") +  # Axis labels
+  theme_minimal() + 
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank(), 
+    axis.ticks = element_line(),
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid"),
+    legend.position = c(0.98, 0.98),  
+    legend.justification = c("right", "top"),  
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5),  # White background with border
+    legend.margin = margin(6, 6, 6, 6), 
+    legend.title = element_text(face = "bold", size = 10), 
+    legend.text = element_text(size = 8),  
+    legend.key.size = unit(0.2, "cm"),  
+    legend.key = element_rect(fill = "white", color = "transparent")
+  )
+
+print(dose_3_4_svnt_plot)
+```
+
+
+
+##################################################
+## EXCLUDED
+#POST INFECTION in Community 2021 
+
+#Old Code from Post Infection in Community 2021 calculation 
+```{r}
+#source("scripts/helper/fc_earliest_date.R")
+#first_infection_data <- calculate_earliest_date(data)
+#source("scripts/helper/fc_extract_dates.R")
+#valid_dates_result <- extract_valid_dates_with_weights(first_infection_data)
+
+
+#median_svnt <- median(valid_dates_result$rX_svnt_wt, na.rm = TRUE) 
+#median_df_svnt <- data.frame(x = factor(1), median = median_svnt)
+
+#post_infection_svnt <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_svnt_wt)) + 
+  #geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  #geom_crossbar( data = median_df_svnt, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
+  #scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  #scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Cohort Post-Infection") + 
+  #theme_bw(base_size = 12) + 
+  #theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+         #plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
+         #panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        # axis.ticks = element_blank(), legend.position = "none", 
+         #panel.border = element_blank(), 
+        # axis.line = element_line(size = 0.5, color = "black") )
+
+#post_infection_svnt
+
+#median_elisa<- median(valid_dates_result$rX_elisa_wt, na.rm = TRUE) 
+#median_df_elisa <- data.frame(x = factor(1), median = median_elisa)
+
+#post_infection_elisa <- ggplot(valid_dates_result, aes(x = factor(1), y = rX_elisa_wt)) + 
+  #geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
+  #geom_crossbar(data = median_df_elisa, aes(x = x, y = median, ymin = median, ymax = median), width = 0.5, colour = "black", size = 0.5) +
+  #scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+  #scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Cohort Post-Infection") + 
+  #theme_bw(base_size = 12) + 
+ # theme( plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+         #plot.title = element_text(face = "bold", size = 14), axis.title = element_text(face = "bold"), axis.text.x = element_text(face = "bold"), 
+         #panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        # axis.ticks = element_blank(), legend.position = "none", 
+         #panel.border = element_blank(), 
+        # axis.line = element_line(size = 0.5, color = "black") )
+
+#post_infection_elisa
+```
+
+
+#####
+## EXCLUDE
+#Two Dose Data Creation 
+#sVNT and ELISA
+```{r}
+two_dose_waning_elisa <- get_measurements_in_interval(two_dose_data, "dose1_date", "dose2_date", weight_type = "elisa", permutation_col = "two_dose_permutation") %>%
+  filter(permutation %in% c("4-4", "1-1"))
+
+two_dose_waning_svnt <- get_measurements_in_interval(two_dose_data, "dose1_date", "dose2_date", weight_type = "svnt", permutation_col = "two_dose_permutation") %>%
+  filter(permutation %in% c("4-4", "1-1"))
+
+elisa_participant_count_2 <- two_dose_waning_elisa %>%
+  summarise(num_participants = n_distinct(id)) %>%
+  mutate(type = "ELISA")
+
+svnt_participant_count_2 <- two_dose_waning_svnt %>%
+  summarise(num_participants = n_distinct(id)) %>%
+  mutate(type = "SVNT")
+
+participant_counts_2 <- bind_rows(elisa_participant_count_2 , svnt_participant_count_2)
+
+print(participant_counts_2)
+```
+
+
+## EXCLUDE
+##Two Dose ELISA Plot 
+```{r}
+two_dose_waning_elisa_plot <- ggplot(two_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = permutation)) +
+  geom_point() +  
+  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  
+  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +  
+  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +  
+  labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the first dose") +  
+  theme_minimal() +  
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank(), 
+    axis.ticks = element_line(),
+    legend.position = "none",  
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+two_dose_waning_elisa_plot
+```
+
+## EXCLUDE
+##Two Dose sVNT Plot 
+```{r}
+two_dose_waning_svnt_plot <- ggplot(two_dose_waning_svnt, aes(x = days_since_dose1, y = weight, color = permutation)) +
+  geom_point() +  
+  geom_smooth(aes(group = permutation), method = "lm", se = TRUE) +  
+  scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +  
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +  
+  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the first dose") +  
+  theme_minimal() +  
+  theme(
+    plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    axis.ticks = element_line(),
+    legend.position = "none",  
+    panel.border = element_blank(),
+    axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+  )
+
+two_dose_waning_svnt_plot
+```
+
+#################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
