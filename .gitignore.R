@@ -7,4 +7,4 @@ use_git_ignore(c(
   ".DS_Store",
   "*.pdf",
   "/admin/"
-))
+)) 
