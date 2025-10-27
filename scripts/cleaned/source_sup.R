@@ -1,3 +1,6 @@
+#Code Organization
+#Supplementary Figure: Boost Analysis Linked by Dose
+
 # Source Code 
 source("scripts/cleaned/source1.R")
 
