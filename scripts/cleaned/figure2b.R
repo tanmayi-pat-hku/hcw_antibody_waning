@@ -67,4 +67,5 @@ svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_
 
 print(svnt_wt_combined_waning_plot)
 
+#Save 
 ggsave("svnt_wt_combined_waning_plot.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)
