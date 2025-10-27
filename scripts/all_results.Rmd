@@ -118,6 +118,7 @@ print(cohort_infection_svnt_plot)
 ```
 
 #########################################
+
 ## Community Post-Infection Analysis 2021
 
 ##Load dataframes 
@@ -189,7 +190,6 @@ print(community_infection_svnt_plot)
 
 
 #########################################
-
 
 ## Boost Analysis
 
@@ -1249,8 +1249,6 @@ three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_sin
   )
 
 three_dose_waning_elisa_plot
-
-
 ```
 
 #Three Dose sVNT Plot
