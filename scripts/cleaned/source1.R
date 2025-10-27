@@ -152,15 +152,6 @@ three_mid_x_e            <- three_elisa_wt$mid_x
 
 
 
-
-
-
-
-
-
-
-
-
 #sVNT all Vaccine permutations 
 ##ONE
 one_svnt_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_svnt_wt, min_n = 5, dose_label = "1 Dose")

@@ -5,3 +5,4 @@
 *.pdf
 
 /admin/
+.Rproj.user

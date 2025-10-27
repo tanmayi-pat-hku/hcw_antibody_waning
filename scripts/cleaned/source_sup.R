@@ -70,3 +70,15 @@ svnt_wt_time_plot_2_sample_counts <- result_2_dose_svnt$long_data %>%
 svnt_wt_time_plot_2_sample_counts <- with(svnt_wt_time_plot_2_sample_counts, 
                                           paste("B: n =", n[two_dose_permutation == "1-1"], "\n",
                                                 "S: n =", n[two_dose_permutation == "4-4"]))
+
+##THREE DOSE 
+svnt_wt_time_plot_3_sample_counts <- result_3_dose_svnt$long_data %>%
+  group_by(three_dose_permutation) %>%
+  summarise(n = n_distinct(id), .groups = "drop")
+
+print(svnt_wt_time_plot_3_sample_counts)
+
+# Format the sample counts for the label
+svnt_wt_time_plot_3_sample_counts <- with(svnt_wt_time_plot_3_sample_counts, 
+                                          paste("B: n =", n[three_dose_permutation == "1-1-1"], "\n",
+                                                "S: n =", n[three_dose_permutation == "4-4-4"]))

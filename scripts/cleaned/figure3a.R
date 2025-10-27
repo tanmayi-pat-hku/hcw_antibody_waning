@@ -35,3 +35,5 @@ dose_2_3_elisa_plot <- ggplot(dose_2_3_elisa, aes(x = days_between_doses, y = v3
   )
 
 dose_2_3_elisa_plot
+
+ggsave("dose_2_3_elisa_plot.pdf", plot = dose_2_3_elisa_plot, width = 15, height = 10)
