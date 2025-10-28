@@ -36,48 +36,47 @@ three_labels_elisa <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B")
 
 
 ## Cohort Post-Infection Analysis 2022 
+## Community Post-Infection Analysis 2021
 
 #ELISA Values 
 #filters for NA in i1_elisa_wt 
 #calculates median ELISA post infection value for crossbar 
 
-#cohort dataset #2022
+# Prepare the cohort and community datasets
 cohort_data_elisa <- data %>%
-  filter(!is.na(i1_elisa_wt)) 
-
-cohort_data_median_elisa <- cohort_data_elisa %>%
-  summarize(median = median(i1_elisa_wt, na.rm = TRUE), .groups = 'drop')
-
-
-#sVNT Values Cohort Post Infection 2022 
-#filters for NA in i1_svnt_wt 
-#calculates median svnt post infection value for crossbar 
+  filter(!is.na(i1_elisa_wt)) %>%
+  mutate(group = "Cohort") %>%
+  select(value = i1_elisa_wt, group)
 
 cohort_data_svnt <- data %>%
-  filter(!is.na(i1_svnt_wt)) 
+  filter(!is.na(i1_svnt_wt)) %>%
+  mutate(group = "Cohort") %>%
+  select(value = i1_svnt_wt, group)
 
-cohort_data_median_svnt <- cohort_data_svnt %>%
-  summarize(median = median(i1_svnt_wt, na.rm = TRUE), .groups = 'drop')
-
-#########################################
-## Community Post-Infection Analysis 2021
-
-##Load dataframes 
-
-#ELISA
 community_data_elisa <- community_data %>%
-  filter(!is.na(elisa)) 
+  filter(!is.na(elisa)) %>%
+  mutate(group = "Community") %>%
+  select(value = elisa, group)
 
-community_data_median_elisa <- community_data_elisa %>%
-  summarize(median = median(elisa, na.rm = TRUE), .groups = 'drop')
-
-#sVNT
 community_data_svnt <- community_data %>%
-  filter(!is.na(sVNT)) 
+  filter(!is.na(sVNT)) %>%
+  mutate(group = "Community") %>%
+  select(value = sVNT, group)
 
-community_data_median_svnt <- community_data_svnt %>%
-  summarize(median = median(sVNT, na.rm = TRUE), .groups = 'drop')
+# Combine the datasets
+community_cohort_elisa_data <- bind_rows(cohort_data_elisa, community_data_elisa)
+community_cohort_svnt_data <- bind_rows(cohort_data_svnt, community_data_svnt)
 
+# Calculate median values for each group
+community_cohort_elisa_median <- community_cohort_elisa_data %>%
+  group_by(group) %>%
+  summarize(median = median(value, na.rm = TRUE), .groups = 'drop')
+
+community_cohort_svnt_median <- community_cohort_svnt_data  %>%
+  group_by(group) %>%
+  summarize(median = median(value, na.rm = TRUE), .groups = 'drop')
+
+###################################
 
 ## Boost Analysis
 

@@ -1,36 +1,13 @@
 #Boost Analysis: ELISA
 
-# Source Code 
-source("scripts/cleaned/source1.R")
 
-
-cohort_infection_elisa_plot <- ggplot(cohort_data_elisa, aes(x = factor(1), y = i1_elisa_wt)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "darkred") + 
-  geom_crossbar(data = cohort_data_median_elisa, aes(x = factor(1), y = median, ymin = median, ymax = median), 
-                width = 0.5, colour = "black", size = 0.5) +
-  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
+community_cohort_elisa_plot <- ggplot(community_cohort_elisa_data, aes(x = group, y = value, color = group)) + 
+  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5) + 
+  geom_crossbar(data = community_cohort_elisa_median, aes(x = group, y = median, ymin = median, ymax = median), 
+                width = 0.4, colour = "black", size = 0.5) +
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
-  labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Cohort Post-Infection") + 
-  theme_bw(base_size = 12) + 
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
-        plot.title = element_text(face = "bold", size = 14), 
-        axis.title = element_text(face = "bold"), 
-        axis.text.x = element_text(face = "bold"), 
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        axis.ticks = element_blank(), 
-        legend.position = "none", 
-        panel.border = element_blank(), 
-        axis.line = element_line(size = 0.5, color = "black"))
-
-#Community Plot for sVNT 2021
-community_infection_elisa_plot <- ggplot(community_data_elisa, aes(x = factor(1), y = elisa)) + 
-  geom_jitter(width = 0.2, alpha = 0.8, size = 2.5, colour = "deeppink") + 
-  geom_crossbar(data = community_data_median_elisa, aes(x = factor(1), y = median, ymin = median, ymax = median), 
-                width = 0.5, colour = "black", size = 0.5) +
-  scale_x_discrete(labels = c(""), expand = expansion(add = c(0.5, 0.5))) + 
-  scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
-  labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Community Post-Infection") + 
+  scale_color_manual(values = c("Cohort" = "darkred", "Community" = "deeppink")) +
+  labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Post-Infection") + 
   theme_bw(base_size = 12) + 
   theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
         plot.title = element_text(face = "bold", size = 14), 
@@ -179,14 +156,7 @@ elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, b
         axis.ticks.y = element_line(),          
         axis.line.y = element_line())  
 
-cohort_infection_elisa_plot <- cohort_infection_elisa_plot + 
-  scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
-  labs(y = NULL) +  
-  theme(axis.text.y = element_blank(),  
-        axis.ticks.y = element_blank(),  
-        axis.line.y = element_blank())
-
-community_infection_elisa_plot <- community_infection_elisa_plot + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
+community_cohort_elisa_plot <- community_cohort_elisa_plot + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
   labs(y = NULL) +  
   theme(axis.text.y = element_blank(),  
         axis.ticks.y = element_blank(),  
@@ -213,11 +183,11 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + cohort_infection_elisa_plot + 
-                                            community_infection_elisa_plot + one_elisa_wt_plot + 
+elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + community_cohort_elisa_plot + 
+                                            one_elisa_wt_plot + 
                                             two_elisa_wt_plot + 
                                             three_elisa_wt_plot) + 
-  plot_layout(ncol = 6) + 
+  plot_layout(ncol = 5) + 
   plot_annotation(title = "WT RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
   theme(plot.background = element_blank(),
