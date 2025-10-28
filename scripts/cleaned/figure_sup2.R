@@ -12,7 +12,7 @@ dose_2_3_svnt_plot <- ggplot(dose_2_3_svnt, aes(x = days_between_doses, y = v3_s
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
                      labels = c("1" = "B", "4" = "S")) +
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  scale_y_continuous(limits = c(90, 100), breaks = seq(90, 100, by = 1)) +
   labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Third Dose Date") +  # Axis labels
   theme_minimal() + 
   theme(
@@ -43,7 +43,7 @@ dose_3_4_svnt_plot <- ggplot(dose_3_4_svnt, aes(x = days_between_doses, y = v4_s
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
                      labels = c("1" = "B", "4" = "S")) +
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) +
+  scale_y_continuous(limits = c(90, 100), breaks = seq(90, 100, by = 1)) +
   labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Fourth Dose Date") +  # Axis labels
   theme_minimal() + 
   theme(
