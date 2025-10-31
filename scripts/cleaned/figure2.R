@@ -4,9 +4,9 @@ source("scripts/cleaned/source2.R")
 
 #Three Dose sVNT Plot
 three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since_dose1, y = weight, 
-                                                                   color = as.factor(dose3_brand), 
-                                                                   shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "1", "4"))) +
-  geom_point(size = 3) +  
+                                                                  color = as.factor(dose3_brand), 
+                                                                  shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "1", "4"))) +
+  geom_point(size = 5, alpha = 0.5) +  
   geom_smooth(aes(group = interaction(dose3_brand, type), linetype = type), method = "lm", se = TRUE) + 
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
@@ -14,27 +14,28 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
   scale_linetype_manual(name = "Type", 
                         values = c("homologous" = "solid", "heterologous" = "dashed"),
                         labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")) + 
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + 
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
+  scale_x_continuous(limits = c(0, 400), breaks = seq(0, 400, by = 50)) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the second dose") +  
-  theme_minimal() +  # Use a minimal theme
+  theme_minimal() + 
   theme(
     plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),  # Center the title
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
     axis.title = element_text(face = "bold"),
     axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
-    panel.grid.major = element_blank(),  # Remove major gridlines
-    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
     axis.ticks = element_line(),
-    legend.position = "none",  # Show the legend
+    legend.position = "none",
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
-  )
-
+  ) +
+  coord_cartesian(xlim = c(0, max(three_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
 ##Four Dose SVNT Plot 
 four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight, 
                                                                 color = as.factor(dose4_brand), 
                                                                 shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "1", "4"))) +
-  geom_point(size = 3) +  
+  geom_point(size = 5, alpha = 0.5) +  
   geom_smooth(aes(group = interaction(dose4_brand, type), linetype = type), method = "lm", se = TRUE) + 
   scale_color_manual(
     name = "Vaccine Type", 
@@ -51,7 +52,8 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     values = c("1" = 16, "4" = 17),  
     labels = c("1" = "Homologous", "4" = "Heterologous")
   ) + 
-  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, by = 20)) + 
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
+  scale_x_continuous(limits = c(0, 400), breaks = seq(0, 400, by = 50)) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the third dose") +  
   theme_minimal() +
   theme(
@@ -74,7 +76,8 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     legend.key.size = unit(1, "lines"),
     legend.spacing = unit(0.5, "cm"),
     legend.margin = margin(0, 0, 0, 0)
-  )
+  ) +
+  coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
 
 
 #SVNT PANELS

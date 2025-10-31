@@ -7,7 +7,7 @@ source("scripts/cleaned/source2.R")
 three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, 
                                                                     color = as.factor(dose3_brand), 
                                                                     shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "1", "4"))) +
-  geom_point(size = 3) +  
+  geom_point(size = 5, alpha = 0.5) +  
   geom_smooth(aes(group = interaction(dose3_brand, type), linetype = type), method = "lm", se = TRUE) + 
   
   scale_color_manual(name = "Vaccine Type", 
@@ -44,7 +44,7 @@ ggsave("three_dose_waning_elisa_plot.pdf", plot = three_dose_waning_elisa_plot, 
 
 ##Four Dose ELISA Plot 
 four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose4_brand), shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "1", "4"))) +
-  geom_point(size = 3) + 
+  geom_point(size = 5, alpha = 0.5) + 
   geom_smooth(aes(group = interaction(dose4_brand, type), linetype = type), method = "lm", se = TRUE) +  
   scale_color_manual(name = "Vaccine Type", values = c("1" = "#1F77B4", "4" = "#FF7F0E"), labels = c("1" = "B", "4" = "S")) +
   scale_linetype_manual(name = "Type", 
