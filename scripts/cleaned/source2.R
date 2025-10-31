@@ -7,6 +7,8 @@ source("scripts/cleaned/source1.R")
 #Source Measure Interval Function 
 source("scripts/helper/fc_measure_intervals.R")
 
+three_dose_data <- three_dose_data %>%
+  mutate(type = ifelse(three_dose_permutation %in% c("1-1-1", "4-4-4"), "homologous", "heterologous"))
 
 #Three Dose Data Creation
 #sVNT and ELISA
@@ -27,6 +29,11 @@ participant_counts_3 <- bind_rows(elisa_participant_count_3 , svnt_participant_c
 
 #Four Dose Data Creation
 #sVNT and ELISA
+
+four_dose_data <- four_dose_data %>%
+  mutate(type = ifelse(four_dose_permutation %in% c("1-1-1-1", "4-4-4-4"), "homologous", "heterologous"))
+
+
 four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "elisa", permutation_col = "four_dose_permutation") %>%
   filter(dose4_brand %in% c("4", "1"))
 

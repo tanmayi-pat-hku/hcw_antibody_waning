@@ -3,14 +3,22 @@
 # Source Code 
 source("scripts/cleaned/source2.R")
 
-#Three Dose ELISA Plot
-three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose3_brand), shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "circle", "triangle"))) +
-  geom_point() +  
-  #geom_smooth(aes(group = dose3_brand), method = "lm", se = TRUE) + 
+
+three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, 
+                                                                    color = as.factor(dose3_brand), 
+                                                                    shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "1", "4"))) +
+  geom_point(size = 3) +  
+  geom_smooth(aes(group = interaction(dose3_brand, type), linetype = type), method = "lm", se = TRUE) + 
   
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
                      labels = c("1" = "B", "4" = "S")) + 
+  scale_linetype_manual(name = "Type", 
+                        values = c("homologous" = "solid", "heterologous" = "dashed"),
+                        labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")) + 
+  scale_shape_manual(name = "Dose 3 Brand", 
+                     values = c("1" = 16, "4" = 17),  
+                     labels = c("1" = "Homologous", "4" = "Heterologous")) + 
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
   labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the second dose") +  
   theme_minimal() +  # Use a minimal theme
@@ -22,17 +30,29 @@ three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_sin
     panel.grid.major = element_blank(),  # Remove major gridlines
     panel.grid.minor = element_blank(),  # Remove minor gridlines
     axis.ticks = element_line(),
-    legend.position = "none",  # Hide the legend
+    legend.position = "right",  # Show the legend
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
 
+print(three_dose_waning_elisa_plot)
+
+ggsave("three_dose_waning_elisa_plot.pdf", plot = three_dose_waning_elisa_plot, width = 15, height = 8)
+
+
+# Low Sample Size for After the Third Dose 
 
 ##Four Dose ELISA Plot 
-four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose4_brand), shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "circle", "triangle"))) +
-  geom_point() + 
-  #geom_smooth(aes(group = dose4_brand), method = "lm", se = TRUE) +  # Add separate linear trendlines for each permutation
+four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since_dose1, y = weight, color = as.factor(dose4_brand), shape = ifelse(permutation %in% c("4-4-4-4", "1-1-1-1"), "1", "4"))) +
+  geom_point(size = 3) + 
+  geom_smooth(aes(group = interaction(dose4_brand, type), linetype = type), method = "lm", se = TRUE) +  
   scale_color_manual(name = "Vaccine Type", values = c("1" = "#1F77B4", "4" = "#FF7F0E"), labels = c("1" = "B", "4" = "S")) +
+  scale_linetype_manual(name = "Type", 
+                        values = c("homologous" = "solid", "heterologous" = "dashed"),
+                        labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")) + 
+  scale_shape_manual(name = "Dose 4 Brand", 
+                     values = c("1" = 16, "4" = 17),  
+                     labels = c("1" = "Homologous", "4" = "Heterologous")) +
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) +  # Y-axis limits and breaks
   labs(x = NULL, y = "WT RBD ELISA (OD value)", title = "After the third dose") +  # Axis labels
   theme_minimal() + 
