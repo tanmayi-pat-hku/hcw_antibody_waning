@@ -15,7 +15,7 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
                         values = c("homologous" = "solid", "heterologous" = "dashed"),
                         labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")) + 
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
-  scale_x_continuous(limits = c(0, 400), breaks = seq(0, 400, by = 50)) +
+  scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the second dose") +  
   theme_minimal() + 
   theme(
@@ -31,6 +31,7 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   ) +
   coord_cartesian(xlim = c(0, max(three_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
+
 ##Four Dose SVNT Plot 
 four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight, 
                                                                 color = as.factor(dose4_brand), 
@@ -44,7 +45,7 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
   ) + 
   scale_linetype_manual(
     name = "Type", 
-    values = c("homologous" = "solid", "heterologous" = "dotted"),
+    values = c("homologous" = "solid", "heterologous" = "dashed"),
     labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")
   ) + 
   scale_shape_manual(
@@ -53,7 +54,7 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     labels = c("1" = "Homologous", "4" = "Heterologous")
   ) + 
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
-  scale_x_continuous(limits = c(0, 400), breaks = seq(0, 400, by = 50)) +
+  scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the third dose") +  
   theme_minimal() +
   theme(
@@ -77,8 +78,8 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     legend.spacing = unit(0.5, "cm"),
     legend.margin = margin(0, 0, 0, 0)
   ) +
-  coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
-
+  coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100)) +
+  guides(linetype = guide_legend(override.aes = list(linetype = c("dotted", "solid"))))
 
 #SVNT PANELS
 svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
@@ -92,4 +93,4 @@ svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_
 print(svnt_wt_combined_waning_plot)
 
 #Save 
-ggsave("svnt_wt_combined_waning_plot.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)
+ggsave("figure_2.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)

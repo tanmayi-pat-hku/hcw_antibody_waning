@@ -448,4 +448,4 @@ boost_plot <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_wit
 # Print the combined plot
 print(boost_plot)
 
-ggsave("boost_plot.pdf", plot = boost_plot, width = 24, height = 6)
+ggsave("figure_1.pdf", plot = boost_plot, width = 24, height = 6)

@@ -6,12 +6,13 @@ source("scripts/cleaned/source_sup2.R")
 
 #sVNT 
 dose_2_3_svnt_plot <- ggplot(dose_2_3_svnt, aes(x = days_between_doses, y = v3_svnt_wt, color = factor(dose3_brand))) +
-  geom_point() + 
+  geom_point(size = 5, alpha = 0.5) + 
   #geom_smooth(aes(group = factor(dose3_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
                      labels = c("1" = "B", "4" = "S")) +
   scale_y_continuous(limits = c(90, 100), breaks = seq(90, 100, by = 1)) +
+  scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
   labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Third Dose Date") +  # Axis labels
   theme_minimal() + 
   theme(
@@ -37,11 +38,12 @@ dose_2_3_svnt_plot <- ggplot(dose_2_3_svnt, aes(x = days_between_doses, y = v3_s
 
 #sVNT 
 dose_3_4_svnt_plot <- ggplot(dose_3_4_svnt, aes(x = days_between_doses, y = v4_svnt_wt, color = factor(dose4_brand))) +
-  geom_point() + 
+  geom_point(size = 5, alpha = 0.5) + 
   #geom_smooth(aes(group = factor(dose4_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
                      labels = c("1" = "B", "4" = "S")) +
+  scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
   scale_y_continuous(limits = c(90, 100), breaks = seq(90, 100, by = 1)) +
   labs(x = "Days Between Doses", y = "WT sVNT Inhibition (%)", title = "Fourth Dose Date") +  # Axis labels
   theme_minimal() + 
@@ -68,7 +70,7 @@ dose_3_4_svnt_plot <- ggplot(dose_3_4_svnt, aes(x = days_between_doses, y = v4_s
 # Between Dose 2 - 3 Plot 
 #ELISA
 dose_2_3_elisa_plot <- ggplot(dose_2_3_elisa, aes(x = days_between_doses, y = v3_elisa_wt, color = factor(dose3_brand))) +
-  geom_point() + 
+  geom_point(size = 5, alpha = 0.5) + 
   #geom_smooth(aes(group = factor(dose3_brand)), method = "lm", se = TRUE) +  # Add separate linear trendlines for each brand
   scale_color_manual(name = "Vaccine Type", 
                      values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
@@ -108,4 +110,4 @@ between_doses_plot <-  (
 print(between_doses_plot)
 
 
-ggsave("between_doses_plot.pdf", plot = between_doses_plot, width = 15, height = 10)
+ggsave("figure_sup2.pdf", plot = between_doses_plot, width = 15, height = 10)

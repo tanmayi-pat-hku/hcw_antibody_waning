@@ -274,4 +274,4 @@ time_analysis_combined_plot <- (elisa_wt_time_plot_2 + elisa_wt_time_plot_3 +
 
 print(time_analysis_combined_plot)
 
-ggsave("time_analysis_combined_plot.pdf", plot = time_analysis_combined_plot, width = 10, height = 6)
+ggsave("figure_sup1.pdf", plot = time_analysis_combined_plot, width = 10, height = 6)

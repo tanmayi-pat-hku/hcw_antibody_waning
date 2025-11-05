@@ -37,7 +37,7 @@ three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_sin
 
 print(three_dose_waning_elisa_plot)
 
-ggsave("three_dose_waning_elisa_plot.pdf", plot = three_dose_waning_elisa_plot, width = 15, height = 8)
+ggsave("figure2a_sup.pdf", plot = three_dose_waning_elisa_plot, width = 15, height = 8)
 
 
 # Low Sample Size for After the Third Dose 
@@ -87,5 +87,3 @@ elisa_wt_combined_waning_plot <- (three_dose_waning_elisa_plot + four_dose_wanin
         plot.margin = margin(0, 0, 0, 0))
 
 print(elisa_wt_combined_waning_plot)
-
-ggsave("elisa_wt_combined_waning_plot.pdf", plot = elisa_wt_combined_waning_plot, width = 15, height = 8)
