@@ -29,8 +29,8 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
     legend.position = "none",
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
-  ) +
-  coord_cartesian(xlim = c(0, max(three_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
+  ) #+
+  #coord_cartesian(xlim = c(0, max(three_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))  
 
 ##Four Dose SVNT Plot 
 four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight, 
@@ -77,9 +77,8 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     legend.key.size = unit(1, "lines"),
     legend.spacing = unit(0.5, "cm"),
     legend.margin = margin(0, 0, 0, 0)
-  ) +
-  coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100)) +
-  guides(linetype = guide_legend(override.aes = list(linetype = c("dotted", "solid"))))
+  )  + guides(linetype = guide_legend(override.aes = list(linetype = c("dotted", "solid"))))
+#+coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))
 
 #SVNT PANELS
 svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
