@@ -16,7 +16,7 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
                         labels = c("homologous" = "Homologous", "heterologous" = "Heterologous")) + 
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
   scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
-  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the second dose") +  
+  labs(x = "Days", y = "WT sVNT Inhibition (%)", title = "After the second dose") +  
   theme_minimal() + 
   theme(
     plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
@@ -55,7 +55,7 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
   ) + 
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
   scale_x_continuous(limits = c(0, 420), breaks = seq(0, 420, by = 30)) +
-  labs(x = NULL, y = "WT sVNT Inhibition (%)", title = "After the third dose") +  
+  labs(x = "Days", y = "WT sVNT Inhibition (%)", title = "After the third dose") +  
   theme_minimal() +
   theme(
     plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
@@ -87,7 +87,8 @@ svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
         panel.border = element_blank(), 
-        plot.margin = margin(0, 0, 0, 0))
+        plot.margin = margin(0, 0, 0, 0)) +
+  plot_annotation(tag_levels = 'A') 
 
 print(svnt_wt_combined_waning_plot)
 

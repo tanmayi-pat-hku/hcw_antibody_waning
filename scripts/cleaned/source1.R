@@ -136,6 +136,7 @@ one_dose_medians_e     <- one_elisa_wt$medians
 one_n_levels_e         <- one_elisa_wt$n_levels
 one_mid_x_e            <- one_elisa_wt$mid_x
 
+
 ##TWO 
 two_elisa_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_elisa_wt, min_n = 5, dose_label = "2 Dose")
 

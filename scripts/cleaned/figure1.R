@@ -443,7 +443,7 @@ svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svn
 # Combine the two plots vertically
 boost_plot <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
   plot_annotation(title = "WT sVNT and RBD ELISA", 
-                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5)))
+                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A'))
 
 # Print the combined plot
 print(boost_plot)

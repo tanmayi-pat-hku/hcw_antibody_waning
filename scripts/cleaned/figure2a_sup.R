@@ -85,5 +85,3 @@ elisa_wt_combined_waning_plot <- (three_dose_waning_elisa_plot + four_dose_wanin
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
         panel.border = element_blank(), 
         plot.margin = margin(0, 0, 0, 0))
-
-print(elisa_wt_combined_waning_plot)

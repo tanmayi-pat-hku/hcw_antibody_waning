@@ -1,0 +1,93 @@
+---
+title: Immunogenicity and durability of up to four doses of ancestral SARS-CoV-2-based mRNA and inactivated COVID-19 vaccines among healthcare workers in Hong Kong
+author: Wey Wen Lim and Tanmayi Patharkar
+documentclass: article
+site: bookdown::bookdown_site
+output:
+  bookdown::word_document2: 
+    toc: false
+    reference_docx: Word_RMD_style.docx
+---
+<br><br>
+```{r Setup, include=FALSE}
+  # Global options
+  knitr::opts_chunk$set(echo = TRUE, 
+                        root.dir = "../Shared COVID HCW antibody waning/") # Working directory
+  
+  # Packages
+  library(librarian)
+  shelf(tidyverse)
+```
+
+```{r Load data and format, include=FALSE, echo = FALSE}
+  
+  # Load data
+  hcw.ab <- read.csv("data/20251007_hcw_posvax_abwaning.csv") 
+  com.ab <- read.csv("data/2021_community_elisa_sVNT.csv")
+  
+  # Format
+  hcw.ab <- hcw.ab %>%
+    mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) 
+
+```
+
+Abbreviations:
+
+healthcare workers (HCW)
+
+<br><br>
+
+:::{custom-style="Heading 1"}
+Methods
+:::
+
+```{r Methods, include=FALSE, echo=FALSE} 
+
+```
+Since June 2020, HCWs were recruited from public and private healthcare institutions from around Hong Kong. We defined HCWs as anyone who worked in a hospital or medical clinic for at least six months, including medical, allied health, administrative, and support staff. Medically trained personnel working in community healthcare settings such as residential care homes, prisons, and schools are not included. 
+
+<br><br>
+
+:::{custom-style="Heading 1"}
+Results
+:::
+
+```{r Descriptive statistics, echo = FALSE, warning = FALSE, message = FALSE}
+ # Study period
+  max.month <- format(as.Date(max(hcw.ab$v4_date[!is.na(hcw.ab$v4_svnt_wt)], na.rm = T)), 
+                      format = "%B %Y")
+
+```
+
+Between June 2020 and `r max.month`, 
+
+```{r Table 1, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/tabel1.R")
+
+```
+
+```{r Figure 1, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/source1.R")
+source("scripts/cleaned/figure1.R")
+```
+
+```{r Figure 2, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/source2.R")
+source("scripts/cleaned/figure2.R")
+```
+
+```{r Supplementary figure 1, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/source_sup1.R")
+source("scripts/cleaned/figure_sup1.R")
+```
+
+```{r Supplementary figure 2, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/source_sup2.R")
+source("scripts/cleaned/figure_sup2.R")
+```
+
+```{r Supplementary figure 3, echo = FALSE, warning = FALSE, message = FALSE}
+source("scripts/cleaned/source2.R")
+source("scripts/cleaned/figure2a_sup.R")
+```
+

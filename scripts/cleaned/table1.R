@@ -3,53 +3,71 @@ library(librarian)
 shelf(xtable)
 shelf(dplyr)
 
-# Create a structured data frame for the table
-data <- data.frame(
-  Vaccine_Regimen = c("1-1", "1-1", "4-4", "4-4", "1-1-1", "1-1-1", "4-4-4", "4-4-4", "After Dose 1", "After Dose 1", "After Dose 2", "After Dose 2", "After Dose 3", "After Dose 3"),
-  Type = c("ELISA", "sVNT", "ELISA", "sVNT", "ELISA", "sVNT", "ELISA", "sVNT", "ELISA", "sVNT", "ELISA", "sVNT", "ELISA", "sVNT"),
-  Participants = c(287, 14, 58, 5, 105, 10, 17, 1, 19, 92, 926, 856, 5, 4),
-  stringsAsFactors = FALSE
+source("scripts/cleaned/source1.R")
+
+#Take appropriate counts 
+## Community 
+
+## Cohort Post-Infection Analysis 2022 
+count_cohort_elisa <- nrow(cohort_data_elisa) 
+count_cohort_svnt <- nrow(cohort_data_svnt)
+
+cohort_counts <- data.frame(
+  Cohort_Data = c("Cohort ELISA", "Cohort sVNT"),
+  Count = c(count_cohort_elisa, count_cohort_svnt)
 )
 
-# Create a LaTeX table string
-table_latex <- "\\begin{table}[ht]\n\
-\\centering\n\
-\\caption{Participant Counts and Waning Analysis for ELISA and sVNT}\n\
-\\begin{tabular}{@{}lll@{}}\n\
-\\specialrule{0.8pt}{0pt}{0pt} % top line\n\
-\\textbf{Vaccine Regimen} &  & \\textbf{Participants (n)} \\\\\n\
-\\specialrule{1.2pt}{0pt}{0pt} % major separator\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-\\multicolumn{3}{l}{\\textbf{Two Dose}} \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-\\multirow{2}{*}{1-1} & ELISA & 287 \\\\\n\
- & sVNT & 14 \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-\\multirow{2}{*}{4-4} & ELISA & 58 \\\\\n\
- & sVNT & 5 \\\\\n\
-\\specialrule{1.2pt}{0pt}{0pt}\n\
-\\multicolumn{3}{l}{\\textbf{Three Dose}} \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-\\multirow{2}{*}{1-1-1} & ELISA & 105 \\\\\n\
- & sVNT & 10 \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-\\multirow{2}{*}{4-4-4} & ELISA & 17 \\\\\n\
- & sVNT & 1 \\\\\n\
-\\specialrule{1.2pt}{0pt}{0pt}\n\
-\\multicolumn{3}{l}{\\textbf{Waning Analysis}} \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-After Dose 1 & ELISA & 19 \\\\\n\
- & sVNT & 92 \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-After Dose 2 & ELISA & 926 \\\\\n\
- & sVNT & 856 \\\\\n\
-\\specialrule{0.8pt}{0pt}{0pt}\n\
-After Dose 3 & ELISA & 5 \\\\\n\
- & sVNT & 4 \\\\\n\
-\\bottomrule\n\
-\\end{tabular}\n\
-\\label{tab:with_two_dose_label}\n\
-\\end{table}\n"
+print(cohort_counts)
 
-# Write the LaTeX table to a .tex file
-writeLines(table_latex, "table_output.tex")
+##Community Post-Infection Analysis 2021
+count_community_elisa <- nrow(community_data_elisa) 
+count_commuity_svnt <- nrow(community_data_svnt)
+
+community_counts <- data.frame(
+  Community_Data = c("Community ELISA", "Community sVNT"),
+  Count = c(count_community_elisa, count_commuity_svnt)
+)
+
+print(community_counts)
+
+##Baseline Value Measurements 
+
+baseline_count_elisa <- nrow(baseline_elisa) 
+baseline_count_svnt <- nrow(baseline_svnt)
+
+baseline_counts <- data.frame(
+  Baseline_Data = c("Baseline ELISA", "Baseline sVNT"),
+  Count = c(baseline_count_elisa, baseline_count_svnt)
+)
+
+print(baseline_counts)
+
+## ELISA Doses Count 
+one_dose_elisa_count <- one_elisa_wt[["valid_perm_count"]] 
+two_dose_elisa_count <- two_elisa_wt[["valid_perm_count"]] 
+three_dose_elisa_count <- three_elisa_wt[["valid_perm_count"]]
+
+
+elisa_counts <- list(
+  "One Dose ELISA" = one_dose_elisa_count,
+  "Two Doses ELISA" = two_dose_elisa_count,
+  "Three Doses ELISA" = three_dose_elisa_count
+)
+
+print(elisa_counts)
+
+## sVNT Doses Counts 
+one_dose_svnt_count <- one_svnt_wt[["valid_perm_count"]] 
+two_dose_svnt_count <- two_svnt_wt[["valid_perm_count"]] 
+three_dose_svnt_count <- three_svnt_wt[["valid_perm_count"]] 
+four_dose_svnt_count <- four_svnt_wt[["valid_perm_count"]] 
+
+svnt_counts <- list(
+  "One Dose sVNT" = one_dose_svnt_count,
+  "Two Doses sVNT" = two_dose_svnt_count,
+  "Three Doses sVNT" = three_dose_svnt_count,
+  "Four Doses sVNT" = four_dose_svnt_count
+)
+
+print(svnt_counts)
+
