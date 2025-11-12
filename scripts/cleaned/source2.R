@@ -7,6 +7,10 @@ source("scripts/cleaned/source1.R")
 #Source Measure Interval Function 
 source("scripts/helper/fc_measure_intervals.R")
 
+#Source Function to Make Continuous to Discete Days (Panel C)
+source("scripts/helper/fc_continuous_to_discrete.R")
+
+
 three_dose_data <- three_dose_data %>%
   mutate(type = ifelse(three_dose_permutation %in% c("1-1-1", "4-4-4"), "homologous", "heterologous"))
 
@@ -49,3 +53,14 @@ svnt_participant_count_4 <- four_dose_waning_svnt %>%
   mutate(type = "SVNT")
 
 participant_counts_4 <- bind_rows(elisa_participant_count_4 , svnt_participant_count_4)
+
+#Heterologous and Homologous Comparison for After Dose 2 
+
+three_dose_waning_svnt_intervals <- create_time_intervals(three_dose_waning_svnt) %>%
+  filter(permutation != "1-66-1")
+
+
+
+
+
+

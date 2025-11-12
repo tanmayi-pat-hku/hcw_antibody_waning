@@ -80,6 +80,38 @@ source("scripts/cleaned/figure1.R")
 figure_1
 ```
 
+ANCOVA - analysis of covariance 
+
+```{r}
+# Test for differences in slopes (interaction term)
+model_slope <- lm(weight ~ days_since_dose1 * dose3_brand * type, 
+                  data = three_dose_waning_svnt)
+anova(model_slope)
+
+# Compare slopes between all group combinations
+pairwise_slopes <- emtrends(model_slope, pairwise ~ dose3_brand * type, 
+                           var = "days_since_dose1")
+summary(pairwise_slopes, adjust = "tukey")
+
+
+###############################################################
+
+model_better <- lm(weight ~ days_since_dose1 * dose3_brand + 
+                   days_since_dose1 * type + 
+                   dose3_brand * type, 
+                 data = three_dose_waning_svnt)
+
+pairwise_slopes <- emtrends(model_better, pairwise ~ dose3_brand * type, 
+                           var = "days_since_dose1")
+summary(pairwise_slopes, adjust = "none")
+
+
+```
+
+Pairwise comparison of slopes 
+
+
+
 ```{r Figure 2 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure2.R")
 ```

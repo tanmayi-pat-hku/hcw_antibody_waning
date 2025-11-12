@@ -417,7 +417,8 @@ three_svnt_wt_plot <- three_svnt_wt_plot +
   scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
   labs(y = NULL) + 
   theme(axis.text.y = element_blank(), 
-        axis.line.y = element_blank())
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 four_svnt_wt_plot <- four_svnt_wt_plot + 
   scale_y_continuous(limits = y_limits, breaks = seq(0, 100, by = 20)) +
