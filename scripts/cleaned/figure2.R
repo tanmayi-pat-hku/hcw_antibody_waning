@@ -93,4 +93,4 @@ figure_2 <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) +
 print(figure_2)
 
 #Save 
-ggsave("figure_2.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)
+ggsave("figure_2.pdf", plot = figure_2, width = 15, height = 10)

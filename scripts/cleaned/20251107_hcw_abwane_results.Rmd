@@ -64,6 +64,14 @@ Between June 2020 and `r max.month`,
 source("scripts/cleaned/table1.R")
 ```
 
+Boost Analysis 
+
+Analysis of both sVNT and ELISA results after one to four doses of the inactivated (S) and mRNA (B) vaccines were recorded for the study population. 
+
+Wilcoxon Sum Rank 
+Kruskall Wallis 
+
+
 ```{r Figure 1 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure1.R")
 ```
@@ -102,3 +110,17 @@ source("scripts/cleaned/figure2a_sup.R")
 ```{r Supplementary Figure 3, echo = FALSE, warning = FALSE, message = FALSE}
 figure2a_sup
 ```
+
+
+```{r Supplementary Figure 4 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
+source("scripts/cleaned/figure_sup3.R")
+```
+
+```{r Supplementary Figure 4, echo = FALSE, warning = FALSE, message = FALSE}
+figure_sup3
+```
+
+
+
+
+

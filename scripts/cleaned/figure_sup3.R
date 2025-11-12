@@ -112,3 +112,6 @@ figure_sup3 <- three_dose_boxplot + four_dose_boxplot +
 
 
 print(figure_sup3)
+
+
+ggsave("figure_sup3.pdf", plot = figure_sup3, width = 15, height = 10)
