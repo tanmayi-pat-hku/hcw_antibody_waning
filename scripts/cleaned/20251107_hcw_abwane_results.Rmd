@@ -20,7 +20,6 @@ output:
 ```
 
 ```{r Load data and format, include=FALSE, echo = FALSE}
-  
   # Load data
   hcw.ab <- read.csv("data/20251007_hcw_posvax_abwaning.csv") 
   com.ab <- read.csv("data/2021_community_elisa_sVNT.csv")
@@ -61,33 +60,45 @@ Results
 
 Between June 2020 and `r max.month`, 
 
-```{r Table 1, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/tabel1.R")
-
+```{r Table 1 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
+source("scripts/cleaned/table1.R")
 ```
 
-```{r Figure 1, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/source1.R")
+```{r Figure 1 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure1.R")
 ```
 
-```{r Figure 2, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/source2.R")
+```{r Figure 1, echo = FALSE, warning = FALSE, message = FALSE}
+figure_1
+```
+
+```{r Figure 2 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure2.R")
 ```
 
-```{r Supplementary figure 1, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/source_sup1.R")
+```{r Figure 2, echo = FALSE, warning = FALSE, message = FALSE}
+figure_2
+```
+
+```{r Supplementary Figure 1 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure_sup1.R")
 ```
 
-```{r Supplementary figure 2, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/source_sup2.R")
+```{r Supplementary Figure 1, echo = FALSE, warning = FALSE, message = FALSE}
+figure_sup1
+```
+
+```{r Supplementary Figure 2 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure_sup2.R")
 ```
 
-```{r Supplementary figure 3, echo = FALSE, warning = FALSE, message = FALSE}
-source("scripts/cleaned/source2.R")
+```{r Supplementary Figure 2, echo = FALSE, warning = FALSE, message = FALSE}
+figure_sup2
+```
+```{r Supplementary Figure 3 Prep, echo = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 source("scripts/cleaned/figure2a_sup.R")
 ```
 
+```{r Supplementary Figure 3, echo = FALSE, warning = FALSE, message = FALSE}
+figure2a_sup
+```

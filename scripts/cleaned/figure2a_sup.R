@@ -4,7 +4,7 @@
 source("scripts/cleaned/source2.R")
 
 
-three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, 
+figure2a_sup <- ggplot(three_dose_waning_elisa, aes(x = days_since_dose1, y = weight, 
                                                                     color = as.factor(dose3_brand), 
                                                                     shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "1", "4"))) +
   geom_point(size = 5, alpha = 0.5) +  
@@ -35,9 +35,9 @@ three_dose_waning_elisa_plot <- ggplot(three_dose_waning_elisa, aes(x = days_sin
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
 
-print(three_dose_waning_elisa_plot)
+print(figure2a_sup)
 
-ggsave("figure2a_sup.pdf", plot = three_dose_waning_elisa_plot, width = 15, height = 8)
+ggsave("figure2a_sup.pdf", plot = figure2a_sup, width = 15, height = 8)
 
 
 # Low Sample Size for After the Third Dose 
@@ -75,13 +75,3 @@ four_dose_waning_elisa_plot <- ggplot(four_dose_waning_elisa, aes(x = days_since
     legend.key.size = unit(0.2, "cm"),  # Smaller legend keys for a compact look
     legend.key = element_rect(fill = "white", color = "transparent")
   ) + guides(shape = "none")
-
-
-#ELISA PANELS
-elisa_wt_combined_waning_plot <- (three_dose_waning_elisa_plot + four_dose_waning_elisa_plot) + 
-  plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 2) + plot_annotation(title = "WT RBD ELISA", 
-                                                                     theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
-  theme(plot.background = element_blank(),
-        plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
-        panel.border = element_blank(), 
-        plot.margin = margin(0, 0, 0, 0))

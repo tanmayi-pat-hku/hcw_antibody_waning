@@ -262,7 +262,7 @@ svnt_wt_time_plot_3 <- ggplot() +
 #########################################
 
 ##MAKING PANELS 
-time_analysis_combined_plot <- (elisa_wt_time_plot_2 + elisa_wt_time_plot_3 + 
+figure_sup1 <- (elisa_wt_time_plot_2 + elisa_wt_time_plot_3 + 
                                   svnt_wt_time_plot_2 + 
                                   svnt_wt_time_plot_3) +
   plot_layout(ncol = 2) + 
@@ -272,6 +272,6 @@ time_analysis_combined_plot <- (elisa_wt_time_plot_2 + elisa_wt_time_plot_3 +
         panel.border = element_blank(),    
         plot.margin = margin(0, 0, 0, 0))
 
-print(time_analysis_combined_plot)
+print(figure_sup1)
 
-ggsave("figure_sup1.pdf", plot = time_analysis_combined_plot, width = 10, height = 6)
+ggsave("figure_sup1.pdf", plot = figure_sup1, width = 10, height = 6)

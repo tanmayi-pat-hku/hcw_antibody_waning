@@ -81,7 +81,7 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
 #+coord_cartesian(xlim = c(0, max(four_dose_waning_svnt$days_since_dose1)), ylim = c(0, 100))
 
 #SVNT PANELS
-svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
+figure_2 <- (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) + 
   plot_layout(widths = c(2.0, 2.0, 2.0), ncol = 2) + plot_annotation(title = "WT sVNT", 
                                                                      theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
@@ -90,7 +90,7 @@ svnt_wt_combined_waning_plot <- (three_dose_waning_svnt_plot + four_dose_waning_
         plot.margin = margin(0, 0, 0, 0)) +
   plot_annotation(tag_levels = 'A') 
 
-print(svnt_wt_combined_waning_plot)
+print(figure_2)
 
 #Save 
 ggsave("figure_2.pdf", plot = svnt_wt_combined_waning_plot, width = 15, height = 10)

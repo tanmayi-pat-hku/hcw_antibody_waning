@@ -100,7 +100,7 @@ five_dose_data <- data %>%
 
 #Baseline Value Measurements
 
-#Source Helper Functions that calculate appropriate anntibody titer measurements (sVNT and ELISA) and baseline value measurements 
+#Source Helper Functions that calculate appropriate antibody titer measurements (sVNT and ELISA) and baseline value measurements 
 
 #Source Baseline Value Measurements Function 
 source("scripts/helper/fc_get_baselines.R")

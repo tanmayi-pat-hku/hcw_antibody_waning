@@ -100,14 +100,14 @@ dose_2_3_elisa_plot <- ggplot(dose_2_3_elisa, aes(x = days_between_doses, y = v3
 
 
 #SVNT PANELS
-between_doses_plot <-  (
+figure_sup2 <-  (
   (dose_2_3_svnt_plot + plot_spacer() + dose_3_4_svnt_plot) +
     plot_layout(ncol = 3, widths = c(1, 0, 1))
 ) / 
   dose_2_3_elisa_plot +
   plot_layout(heights = c(1, 1))  
 
-print(between_doses_plot)
+print(figure_sup2)
 
 
-ggsave("figure_sup2.pdf", plot = between_doses_plot, width = 15, height = 10)
+ggsave("figure_sup2.pdf", plot = figure_sup2, width = 15, height = 10)

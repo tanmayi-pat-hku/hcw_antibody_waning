@@ -3,7 +3,6 @@
 #source code 
 source("scripts/cleaned/source1.R")
 
-
 #Boost Analysis: ELISA
 community_cohort_elisa_plot <- ggplot(community_cohort_elisa_data, aes(x = group, y = value, color = group)) + 
   geom_jitter(width = 0.2, alpha = 0.8, size = 2.5) + 
@@ -438,14 +437,16 @@ svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svn
         panel.border = element_blank(), 
         plot.margin = margin(0, 0, 0, 0))
 
+
+
 ####Make Final Panels 
 
 # Combine the two plots vertically
-boost_plot <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
+figure_1 <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
   plot_annotation(title = "WT sVNT and RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A'))
 
-# Print the combined plot
-print(boost_plot)
+ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 6)
 
-ggsave("figure_1.pdf", plot = boost_plot, width = 24, height = 6)
+# Print the combined plot
+print(figure_1)
