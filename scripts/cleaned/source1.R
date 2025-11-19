@@ -82,7 +82,7 @@ community_cohort_svnt_median <- community_cohort_svnt_data  %>%
 
 #Make separate data frames for each vaccine permutation
 one_dose_data <- data %>%
-  filter(!grepl("NA", one_dose_permutation))
+  filter(!grepl("NA", one_dose_permutation)) 
 
 two_dose_data <- data %>%
   filter(!grepl("NA", two_dose_permutation))
