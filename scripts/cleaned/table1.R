@@ -1,75 +1,50 @@
-# Load libraries
-library(librarian)
-shelf(xtable)
-shelf(dplyr)
+#Write a Table
+# Define the LaTeX table code as a string with escaped backslashes
+table1 <- "
+\\begin{table}[!htbp]
+\\centering
+\\caption{Effect of vaccine regimen on anti-spike IgG (ELISA) and neutralizing antibody (sVNT) levels.}
+\\label{tab:boosting-stats}
+\\small
+\\begin{tabular}{@{}l l r r l c@{}}
+\\toprule
+Assay & Comparison                           & n (Group 1) & n (Group 2) & Test Statistic & Significance \\\\
+\\midrule
+\\multicolumn{6}{c}{\\textit{One-dose Regimen (Wilcoxon rank-sum)}} \\\\
+ELISA & B vs S           & 579         & 126         & \\$W$ = 69,599     & \\$P$ \\$<$ 0.001 \\\\
+sVNT   & B vs S               & 520         & 17         & \\$W$ = 8,161    & \\$P$ \\$<$ 0.001 \\\\
+\\midrule
+\\multicolumn{6}{c}{\\textit{Two-dose Regimen (Wilcoxon rank-sum)}} \\\\
+ELISA  & B-B vs S-S               & 883         & 231         & \\$W$ = 183,444    & \\$P$ \\$<$ 0.001 \\\\
+sVNT  & B-B vs S-S               & 885         & 227         & \\$W$ = 193,315    & \\$P$ \\$<$ 0.001 \\\\
+\\midrule
+\\multicolumn{6}{c}{\\textit{Three-dose Regimen (Kruskal--Wallis \\$\\chi^2 = 153.2\\$, \\$P$ \\$<$ 0.001)}} \\\\
+ELISA & B-B-B vs S-S-S                       & 447         & 114         & \\$Z$ = 12.31      & \\$P$ \\$<$ 0.001 \\\\
+      & B-B-B vs S-S-B                       & 447         & 97          & \\$Z$ = 1.10       & ns  \\\\
+      & S-S-S vs S-S-B                       & 114         & 97          & \\$Z$ = 8.46       & \\$P$ \\$<$ 0.001 \\\\
+\\midrule
+\\multicolumn{6}{c}{\\textit{Three-dose Regimen (Kruskal--Wallis \\$\\chi^2 = 146.3\\$, \\$P$ \\$<$ 0.001)}} \\\\
+sVNT  & B-B-B vs S-S-S                       & 707         & 137         & \\$Z$ = 11.90      & \\$P$ \\$<$ 0.001 \\\\
+      & B-B-B vs S-S-B                       & 707         & 105         & \\$Z$ = 0.41       & ns  \\\\
+      & B-B-B vs B-B-S                       & 707         & 17          & \\$Z$ = 2.35       & ns  \\\\
+      & S-S-S vs S-S-B                       & 137         & 105         & \\$Z$ = 8.24       & \\$P$ \\$<$ 0.001 \\\\
+\\midrule
+\\multicolumn{6}{c}{\\textit{Four-dose Regimen (Kruskal--Wallis \\$\\chi^2 = 45.5\\$, \\$P$ \\$<$ 0.001)}} \\\\
+sVNT  & B-B-B-B vs S-S-S-S                   & 43          & 34          & \\$Z$ = 5.56       & \\$P$ \\$<$ 0.001 \\\\
+      & S-S-B-B vs S-S-S-S                   & 29          & 34          & \\$Z$ = 5.56       & \\$P$ \\$<$ 0.001 \\\\
+      & S-S-S-B vs S-S-S-S                   & 8           & 34          & \\$Z$ = 4.28       & \\$P$ \\$<$ 0.001 \\\\
+      & All other pairs                      & —           & —           & —              & ns  \\\\
+\\bottomrule
+\\end{tabular}
+\\end{table}
+"
 
-source("scripts/cleaned/source1.R")
+# Specify the file path
+file_path <- "table1.tex"
 
-#Take appropriate counts 
-## Community 
+# Write the LaTeX code to the .tex file
+writeLines(table1, file_path)
 
-## Cohort Post-Infection Analysis 2022 
-count_cohort_elisa <- nrow(cohort_data_elisa) 
-count_cohort_svnt <- nrow(cohort_data_svnt)
+# Inform the user
+cat("LaTeX table has been written to", file_path, "\n")
 
-cohort_counts <- data.frame(
-  Cohort_Data = c("Cohort ELISA", "Cohort sVNT"),
-  Count = c(count_cohort_elisa, count_cohort_svnt)
-)
-
-print(cohort_counts)
-
-##Community Post-Infection Analysis 2021
-count_community_elisa <- nrow(community_data_elisa) 
-count_commuity_svnt <- nrow(community_data_svnt)
-
-community_counts <- data.frame(
-  Community_Data = c("Community ELISA", "Community sVNT"),
-  Count = c(count_community_elisa, count_commuity_svnt)
-)
-
-print(community_counts)
-
-##Baseline Value Measurements 
-
-baseline_count_elisa <- nrow(baseline_elisa) 
-baseline_count_svnt <- nrow(baseline_svnt)
-
-baseline_counts <- data.frame(
-  Baseline_Data = c("Baseline ELISA", "Baseline sVNT"),
-  Count = c(baseline_count_elisa, baseline_count_svnt)
-)
-
-print(baseline_counts)
-
-## ELISA Doses Count 
-one_dose_elisa_count <- one_elisa_wt[["valid_perm_count"]] 
-two_dose_elisa_count <- two_elisa_wt[["valid_perm_count"]] 
-three_dose_elisa_count <- three_elisa_wt[["valid_perm_count"]]
-
-
-elisa_counts <- list(
-  "One Dose ELISA" = one_dose_elisa_count,
-  "Two Doses ELISA" = two_dose_elisa_count,
-  "Three Doses ELISA" = three_dose_elisa_count
-)
-
-print(elisa_counts)
-
-## sVNT Doses Counts 
-one_dose_svnt_count <- one_svnt_wt[["valid_perm_count"]] 
-two_dose_svnt_count <- two_svnt_wt[["valid_perm_count"]] 
-three_dose_svnt_count <- three_svnt_wt[["valid_perm_count"]] 
-four_dose_svnt_count <- four_svnt_wt[["valid_perm_count"]] 
-
-svnt_counts <- list(
-  "One Dose sVNT" = one_dose_svnt_count,
-  "Two Doses sVNT" = two_dose_svnt_count,
-  "Three Doses sVNT" = three_dose_svnt_count,
-  "Four Doses sVNT" = four_dose_svnt_count
-)
-
-print(svnt_counts)
-
-
-##Waning Analysis Counts 

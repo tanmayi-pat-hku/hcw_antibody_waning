@@ -12,51 +12,31 @@ source("scripts/helper/fc_continuous_to_discrete.R")
 
 
 three_dose_data <- three_dose_data %>%
-  mutate(type = ifelse(three_dose_permutation %in% c("1-1-1", "4-4-4"), "homologous", "heterologous"))
+  mutate(type = ifelse(two_dose_permutation %in% c("1-1", "4-4"), "homologous", "heterologous"))
 
 #Three Dose Data Creation
 #sVNT and ELISA
-three_dose_waning_elisa <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "elisa", permutation_col = "three_dose_permutation") %>% filter(dose3_brand %in% c("1", "4"))
+three_dose_waning_elisa <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "elisa", permutation_col = "two_dose_permutation") %>% filter(dose2_brand %in% c("1", "4"))
 
-three_dose_waning_svnt <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>% filter(dose3_brand %in% c("1", "4"))
-
-elisa_participant_count_3 <- three_dose_waning_elisa %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "ELISA")
-
-svnt_participant_count_3 <- three_dose_waning_svnt %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "SVNT")
-
-participant_counts_3 <- bind_rows(elisa_participant_count_3 , svnt_participant_count_3)
+three_dose_waning_svnt <- get_measurements_in_interval(three_dose_data, "dose2_date", "dose3_date", weight_type = "svnt", permutation_col = "two_dose_permutation") %>% filter(dose2_brand %in% c("1", "4"))
 
 
 #Four Dose Data Creation
 #sVNT and ELISA
 
 four_dose_data <- four_dose_data %>%
-  mutate(type = ifelse(four_dose_permutation %in% c("1-1-1-1", "4-4-4-4"), "homologous", "heterologous"))
+  mutate(type = ifelse(three_dose_permutation %in% c("1-1-1", "4-4-4"), "homologous", "heterologous"))
+
+four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "elisa", permutation_col = "three_dose_permutation") %>%
+  filter(dose3_brand %in% c("4", "1"))
+
+four_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>%
+  filter(dose3_brand %in% c("4", "1"))
 
 
-four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "elisa", permutation_col = "four_dose_permutation") %>%
-  filter(dose4_brand %in% c("4", "1"))
+#Discrete Comparison for After Dose 3 (For Heterologous and Homologous)
 
-four_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "svnt", permutation_col = "four_dose_permutation") %>%
-  filter(dose4_brand %in% c("4", "1"))
-
-elisa_participant_count_4 <- four_dose_waning_elisa %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "ELISA")
-
-svnt_participant_count_4 <- four_dose_waning_svnt %>%
-  summarise(num_participants = n_distinct(id)) %>%
-  mutate(type = "SVNT")
-
-participant_counts_4 <- bind_rows(elisa_participant_count_4 , svnt_participant_count_4)
-
-#Heterologous and Homologous Comparison for After Dose 2 
-
-three_dose_waning_svnt_intervals <- create_time_intervals(three_dose_waning_svnt) %>%
+four_dose_waning_svnt_intervals <- create_time_intervals_discrete(four_dose_waning_svnt) %>%
   filter(permutation != "1-66-1")
 
 

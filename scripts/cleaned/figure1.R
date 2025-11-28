@@ -145,6 +145,10 @@ three_elisa_wt_plot <- ggplot() +
         axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
 
+empty_plot <- ggplot() + 
+  theme_void() + 
+  theme(plot.margin = margin(0, 0, 0, 0))
+
 
 #########################################
 
@@ -185,16 +189,20 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot_with_community <- (elisa_baseline_wt + community_cohort_elisa_plot + 
-                                            one_elisa_wt_plot + 
-                                            two_elisa_wt_plot + 
-                                            three_elisa_wt_plot) + 
-  plot_layout(ncol = 5) + 
+elisa_wt_combined_plot_with_community <- (
+  elisa_baseline_wt + community_cohort_elisa_plot + 
+    one_elisa_wt_plot + 
+    two_elisa_wt_plot + 
+    three_elisa_wt_plot + 
+    empty_plot 
+) + 
+  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + 
   plot_annotation(title = "WT RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
   theme(plot.background = element_blank(),
         panel.border = element_blank(),    
         plot.margin = margin(0, 0, 0, 0))
+
 
 #Boost Analysis: sVNT 
 
@@ -442,12 +450,11 @@ svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svn
 
 ####Make Final Panels 
 
-# Combine the two plots vertically
 figure_1 <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
   plot_annotation(title = "WT sVNT and RBD ELISA", 
                   theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A'))
 
-ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 6)
+ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 15)
 
 # Print the combined plot
 print(figure_1)
