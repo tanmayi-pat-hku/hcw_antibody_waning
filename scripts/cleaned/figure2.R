@@ -7,19 +7,18 @@ shelf(dplyr)
 
 #Three Dose sVNT Plot
 three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since_dose1, y = weight)) +
-  geom_point(aes(color = as.factor(dose2_brand), 
-                 shape = ifelse(permutation %in% c("4-4", "1-1"), "Homologous", "Heterologous")), 
+  geom_point(aes(color = permutation), 
              size = 3.5, alpha = 0.5) +  
   scale_color_manual(
-    name = "Last Dose Brand", 
-    values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
-    labels = c("1" = "B", "4" = "S")
+    name = "Vaccine Series", 
+    values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E"), 
+    labels = c("1-1" = "B-B", "4-4" = "S-S")
   ) +
   new_scale_color() +
   geom_smooth(aes(color = permutation, 
                   group = permutation,
                   linetype = ifelse(permutation %in% c("4-4", "1-1"), "Homologous", "Heterologous")), 
-              method = "lm", se = TRUE, linewidth = 1.2) +
+              method = "lm", se = TRUE, linewidth = 1.2, show.legend = FALSE) +
   scale_color_manual(
     name = "Vaccine Series",
     values = c("4-4" = "#FF7F0E", 
@@ -52,31 +51,34 @@ three_dose_waning_svnt_plot <- ggplot(three_dose_waning_svnt, aes(x = days_since
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.ticks = element_line(),
-    legend.position = "none",
+    legend.position = "right",
     panel.border = element_blank(),
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
 
 ##Four Dose SVNT Plot 
 four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_dose1, y = weight)) +
-  geom_point(aes(color = as.factor(dose3_brand), 
-                 shape = ifelse(permutation %in% c("4-4-4", "1-1-1"), "Homologous", "Heterologous")), 
+  geom_point(aes(color = permutation), 
              size = 3.5, alpha = 0.5) +  
   scale_color_manual(
-    name = "Last Dose Brand", 
-    values = c("1" = "#1F77B4", "4" = "#FF7F0E"), 
-    labels = c("1" = "B", "4" = "S")
+    name = "Vaccine Series", 
+    values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E", "4-4-1" = "darkgreen"), 
+    labels = c("4-4-4" = "S-S-S", 
+               "1-1-1" = "B-B-B",
+               "4-4-1" = "S-S-B")
   ) +
   new_scale_color() +
-  geom_smooth(data = four_dose_waning_svnt %>% filter(permutation %in% c("4-4-4", "1-1-1")),
+  geom_smooth(data = four_dose_waning_svnt %>% filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1")),
               aes(color = permutation, group = permutation), 
-              method = "lm", se = TRUE, linewidth = 1.2) +
+              method = "lm", se = TRUE, linewidth = 1.2, show.legend = FALSE) +
   scale_color_manual(
     name = "Vaccine Series",
     values = c("4-4-4" = "#FF7F0E",     
-               "1-1-1" = "#1F77B4"),    
-    labels = c("4-4-4" = "S-S-S", 
-               "1-1-1" = "B-B-B")
+               "1-1-1" = "#1F77B4",
+               "4-4-1" = "darkgreen"),    
+    labels = c("4-4-4" = "S Homologous", 
+               "1-1-1" = "B-B-B",
+               "4-4-1" = "S-S-B")
   ) +
   scale_linetype_manual(
     name = "Vaccine Series", 
@@ -103,6 +105,18 @@ four_dose_waning_svnt_plot <- ggplot(four_dose_waning_svnt, aes(x = days_since_d
     axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   ) + 
   guides(shape = "none", linetype = "none")  
+
+
+figure_2 <- (
+  (three_dose_waning_svnt_plot + four_dose_waning_svnt_plot) +
+    plot_layout(ncol = 2)) + plot_annotation(tag_levels = "A")
+print(figure_2)
+
+#Save 
+ggsave("figure_2.pdf", plot = figure_2, width = 15, height = 10)
+
+
+###############
 
 custom_labels <- c("0 - 3", "3 - 6", "6 - 9", "9 - 12", "12 - 15") 
 
@@ -164,15 +178,3 @@ three_dose_facet_box <- ggplot(four_dose_waning_svnt_intervals,
     color = guide_legend(override.aes = list(shape = 22, size = 5)),
     shape = guide_legend(override.aes = list(size = 4))
   )
-
-figure_2 <- (
-  (three_dose_waning_svnt_plot + plot_spacer() + four_dose_waning_svnt_plot) +
-    plot_layout(ncol = 3, widths = c(1, 0, 1))
-) /
-  (three_dose_facet_box) +
-  plot_layout(heights = c(1, 1)) 
-
-print(figure_2)
-
-#Save 
-ggsave("figure_2.pdf", plot = figure_2, width = 15, height = 10)

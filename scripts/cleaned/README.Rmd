@@ -1,0 +1,84 @@
+---
+title: "README"
+author: "Tanmayi Patharkar"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Folder Organization
+- cleaned folder has the latest .R files 
+- uncleaned folder has original .Rmd files and exploratory data analysis 
+- helper folder has helper functions for cleaned folder
+
+------------------------------------------------------
+
+Figure 1: Boost Analysis Figure
+Figure 2: Waning Analysis Figure 
+Figure Sup 1: Linked Boost Figure 
+
+Table 1: Table for Boost Plot Comparison 
+Table 2: Antibody Waning Plot Comparison 
+Table 3: Vaccine Distribution by Regimen, Age, and Sex 
+
+------------------------------------------------------
+
+Source Files = Data Cleaning for each plot 
+
+Source 1 = Data Cleaning for Figure 1 
+Source 2 = Data Cleaning for Figure 2 
+Source Sup 1 = Data Cleaning for Supplementary Figure 
+
+------------------------------------------------------
+
+Figure Files - Figure and Plot Generation 
+
+Figure 1 = Plot Generation for Figure 1 
+Figure 2 = Plot Generation for Figure 2 
+Figure Sup 1 = Plot Generation for Supplementary Figure 
+
+------------------------------------------------------
+
+Statistics Files = Calculations for Table 
+
+Statistics 1 = Stats for Table 1
+Statistics 2 = Stats for Table 2
+
+------------------------------------------------------
+
+Table Files = Making LaTeX files for each table 
+
+Table 1 = Latex File for Table 1 
+Table 2 = Latex File for Table 2 
+Table 3 = Latex File for Table 3 
+
+------------------------------------------------------
+
+Helper Functions 
+
+get_days_between_doses = calculation of days between doses (input = data, first_dose_col, second_dose_col, permutation_col)
+
+bootstrap_slope = calculates bootstrap confidence intervals 
+
+create_time_intervals_discrete = written to turn continuous interval (days) to discrete bins for the box plots [90 day bins]
+
+calculate_demographic_breakdown = Function to calculate gender and age breakdown by permutation (for age and sex function)
+
+calculate_total_demographics = calculates percent M/F and Age Over 50/Age Under 50 in population 
+
+calculate_earliest_date = creates a new column with this earliest date tested positive and filters out any rows where this earliest date could not be determined due to missing values
+
+extract_valid_dates_with_weights = goes through all the rX_date columns and identifies dates that are between 30 and 60 days after the earliest_posdate.For each valid date found within that range, it retrieves the corresponding rX_elisa_wt and rX_svnt_wt values. (Post-infection antibody value calculation)
+
+get_baselines = calculates baseline sVNT or ELISA values. Selects the earliest date, retrieves its corresponding value, renames the columns for clarity, and returns a clean data frame with baseline information. Condition: r_date < v1_date (values are non-NA)
+
+get_measurements_in_interval = Iterates through date columns (r1_date to r11_date), filtering for dates within the specified dose interval and calculating the number of days since the first dose.
+
+multi_group_test = Statistics for Boost Analysis 
+
+process_dose_data = Prepares df for Supplementary Figure (Linked Dose Plot)
+
+two_group_test = Wilcoxon Sum Rank and Cleans Data for Presentation 
+
+fc_perm_summary = Df for Boost Analysis
+
+

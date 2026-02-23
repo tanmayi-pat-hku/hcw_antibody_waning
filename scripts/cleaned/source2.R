@@ -31,16 +31,5 @@ four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_da
   filter(dose3_brand %in% c("4", "1"))
 
 four_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>%
-  filter(dose3_brand %in% c("4", "1"))
-
-
-#Discrete Comparison for After Dose 3 (For Heterologous and Homologous)
-
-four_dose_waning_svnt_intervals <- create_time_intervals_discrete(four_dose_waning_svnt) %>%
-  filter(permutation != "1-66-1")
-
-
-
-
-
+  filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1"))
 

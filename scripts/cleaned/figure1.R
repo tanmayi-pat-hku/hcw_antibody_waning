@@ -452,7 +452,7 @@ svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svn
 
 figure_1 <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
   plot_annotation(title = "WT sVNT and RBD ELISA", 
-                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A'))
+                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A')) 
 
 ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 15)
 

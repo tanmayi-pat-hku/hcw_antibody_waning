@@ -82,19 +82,24 @@ community_cohort_svnt_median <- community_cohort_svnt_data  %>%
 
 #Make separate data frames for each vaccine permutation
 one_dose_data <- data %>%
-  filter(!grepl("NA", one_dose_permutation)) 
+  filter(!grepl("NA", one_dose_permutation)) %>%
+  filter(is.na(posdate_p1) | dose1_date <= posdate_p1)
 
 two_dose_data <- data %>%
-  filter(!grepl("NA", two_dose_permutation))
+  filter(!grepl("NA", two_dose_permutation)) %>%
+  filter(is.na(posdate_p1) | dose2_date <= posdate_p1)
 
 three_dose_data <- data %>%
-  filter(!grepl("NA", three_dose_permutation))
+  filter(!grepl("NA", three_dose_permutation)) %>%
+filter(is.na(posdate_p1) | dose3_date <= posdate_p1)
 
 four_dose_data <- data %>%
-  filter(!grepl("NA", four_dose_permutation))
+  filter(!grepl("NA", four_dose_permutation)) %>%
+  filter(is.na(posdate_p1) | dose4_date <= posdate_p1)
 
 five_dose_data <- data %>%
-  filter(!grepl("NA", five_dose_permutation))
+  filter(!grepl("NA", five_dose_permutation)) %>%
+  filter(is.na(posdate_p1) | dose5_date <= posdate_p1)
 
 #########################################
 
@@ -188,3 +193,7 @@ four_valid_perms      <- four_svnt_wt$valid_perms
 four_dose_medians     <- four_svnt_wt$medians
 four_n_levels         <- four_svnt_wt$n_levels
 four_mid_x            <- four_svnt_wt$mid_x
+
+
+
+

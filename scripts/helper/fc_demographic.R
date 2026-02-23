@@ -1,4 +1,4 @@
-# Function to calculate gender and age breakdown by permutation
+#Function to calculate gender and age breakdown by permutation
 calculate_demographic_breakdown <- function(data, permutation_column) {
   data %>%
     filter(grepl("^(1|4|1-1|4-4|1-1-1|4-4-4|4-4-1|1-1-4)$", !!sym(permutation_column))) %>%
