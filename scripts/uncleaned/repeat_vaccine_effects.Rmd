@@ -84,15 +84,15 @@ mrna_svnt_snapshot_2022_test <- svnt_snapshot_2022 %>%
     (is.na(dose1_brand) | dose1_brand == 1) &
     (is.na(dose2_brand) | dose2_brand == 1) &
     (is.na(dose3_brand) | dose3_brand == 1) &
-    (is.na(dose4_brand) | dose4_brand == 1) &
-    (is.na(dose5_brand) | dose5_brand == 1)
+    (is.na(dose4_brand) | dose4_brand != 4) &
+    (is.na(dose5_brand) | dose5_brand != 4)
   ) %>%
   filter(num_vaccines != 1)
 
 #mrna_svnt_snapshot_2022 <- svnt_snapshot_2022 %>%
   #filter(!grepl("4|66|2|NA", vaccines_permutation)) %>% filter(num_vaccines != 1)
 
-mrna_svnt_long_2022 <- create_long_titer_data(mrna_svnt_snapshot_2022_test)
+mrna_svnt_long_2022 <- create_long_titer_data(mrna_svnt_snapshot_2022_test) #%>% filter(time_point %in% c("Baseline", "Step 1"))
 ```
 
 #inactivated only svnt 2022
@@ -102,8 +102,8 @@ inact_svnt_snapshot_2022_test <- svnt_snapshot_2022 %>%
     (is.na(dose1_brand) | dose1_brand == 4) &
     (is.na(dose2_brand) | dose2_brand == 4) &
     (is.na(dose3_brand) | dose3_brand == 4) &
-    (is.na(dose4_brand) | dose4_brand == 4) &
-    (is.na(dose5_brand) | dose5_brand == 4)
+    (is.na(dose4_brand) | dose4_brand != 1) &
+    (is.na(dose5_brand) | dose5_brand != 1)
   ) %>%
   filter(num_vaccines != 1)
 
@@ -111,7 +111,7 @@ inact_svnt_snapshot_2022_test <- svnt_snapshot_2022 %>%
 #inact_svnt_snapshot_2022 <- svnt_snapshot_2022 %>%
   #filter(!grepl("1|66|2|NA", vaccines_permutation)) %>% filter(num_vaccines != 1)
 
-inact_svnt_long_2022 <- create_long_titer_data(inact_svnt_snapshot_2022_test)
+inact_svnt_long_2022 <- create_long_titer_data(inact_svnt_snapshot_2022_test) #%>% filter(time_point %in% c("Baseline", "Step 1"))
 ```
 
 #mrna only svnt 2021
@@ -128,7 +128,7 @@ mrna_svnt_snapshot_2021_test <- svnt_snapshot_2021 %>%
 #mrna_svnt_snapshot_2021 <- svnt_snapshot_2021 %>%
   #filter(!grepl("4|66|2|NA", vaccines_permutation)) 
 
-mrna_svnt_long_2021 <- create_long_titer_data_3(mrna_svnt_snapshot_2021_test)
+mrna_svnt_long_2021 <- create_long_titer_data(mrna_svnt_snapshot_2021_test)
 ```
 
 #inactivated only svnt 2021
@@ -145,7 +145,7 @@ inact_svnt_snapshot_2021_test <- svnt_snapshot_2021 %>%
 #inact_svnt_snapshot_2021 <- svnt_snapshot_2021 %>%
   #filter(!grepl("1|66|2|NA", vaccines_permutation)) 
 
-inact_svnt_long_2021 <- create_long_titer_data_3(inact_svnt_snapshot_2021_test)
+inact_svnt_long_2021 <- create_long_titer_data(inact_svnt_snapshot_2021_test)
 ```
 
 
@@ -161,7 +161,7 @@ mrna_plot_svnt_2022 <- ggplot(mrna_svnt_long_2022, aes(x = time_point, y = titer
                                               seed = 123),
              size = 2, alpha = 0.5) +
   geom_smooth(aes(group = as.factor(num_vaccines)),
-              method = "loess",
+              method = "lm",
               se = TRUE,
               alpha = 0.2,
               size = 1.2) +
@@ -185,7 +185,7 @@ mrna_plot_svnt_2022 <- ggplot(mrna_svnt_long_2022, aes(x = time_point, y = titer
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
     plot.subtitle = element_text(hjust = 0.5, size = 12, color = "gray30"),
-    legend.position = "right",
+    legend.position = "none",
     legend.title = element_text(face = "bold"),
     axis.text.x = element_text(angle = 0, size = 12),
     axis.text.y = element_text(size = 12),
@@ -227,7 +227,7 @@ inact_plot_svnt_2022 <- ggplot(inact_svnt_long_2022, aes(x = time_point, y = tit
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
     plot.subtitle = element_text(hjust = 0.5, size = 12, color = "gray30"),
-    legend.position = "none",
+    legend.position = "right",
     legend.title = element_text(face = "bold"),
     axis.text.x = element_text(angle = 0, size = 12),
     axis.text.y = element_text(size = 12),
@@ -243,7 +243,8 @@ inact_plot_svnt_2022 <- ggplot(inact_svnt_long_2022, aes(x = time_point, y = tit
 ```{r,warning=FALSE}
 combined_plot_2022_svnt <- mrna_plot_svnt_2022 + inact_plot_svnt_2022 +
   plot_annotation(
-    tag_levels = "A"  
+    tag_levels = "A",
+    title = "Including Omicron"
   ) +
   plot_layout(guides = "collect") 
 
@@ -350,6 +351,49 @@ ggsave(
   height = 6
 )
 ```
+```{r}
+inact_plot_svnt_2021 <- ggplot(inact_svnt_long_2021, aes(x = time_point, y = titer_value, 
+                                                  color = as.factor(num_vaccines), 
+                                                  fill = as.factor(num_vaccines))) +
+  geom_point(alpha = 0.2, position = position_jitterdodge(jitter.width = 0.15, 
+                                              dodge.width = 0.8,
+                                              seed = 123),
+             size = 2, alpha = 0.5) +
+  geom_smooth(aes(group = as.factor(num_vaccines)),
+              method = "loess",
+              se = TRUE,
+              alpha = 0.2,
+              size = 1.2) +
+  stat_summary(aes(group = as.factor(num_vaccines)),
+               fun = mean,
+               geom = "point",
+               size = 4,
+               position = position_dodge(width = 0.8)) +
+  scale_color_manual(values = vaccine_colors, name = "Number of\nVaccines") +
+  scale_fill_manual(values = vaccine_colors, name = "Number of\nVaccines") +
+  scale_y_continuous(breaks = seq(0, 100, by = 10),
+                     expand = c(0, 0)) +
+  coord_cartesian(ylim = c(50, 105)) +  # Added coord_cartesian with 50-105 range
+  labs(x = "Time Point", 
+       y = "sVNT (%)",
+       color = "Number of\nVaccines",
+       fill = "Number of\nVaccines",
+       title = "Inactivated (2021)") +
+  theme_classic(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "gray30"),
+    legend.position = "right",
+    legend.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 0, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major = element_line(color = "gray90", size = 0.2),
+    panel.grid.minor = element_blank()
+  )
+
+inact_plot_svnt_2021
+```
 
 
 
@@ -375,7 +419,7 @@ mrna_summary_2021_svnt
 
 
 ```{r}
-eps <- 1  # small offset to avoid log(0); adjust if necessary
+eps <- 1 
 
 df_inact_2022_plot <- inact_svnt_long_2022 %>%
   filter(time_point %in% c("Baseline", "Step 1")) %>%
@@ -389,7 +433,7 @@ df_inact_2022_plot <- inact_svnt_long_2022 %>%
 
 p_log10_inact_2022 <- ggplot(df_inact_2022_plot, aes(x = Baseline_eps, y = Step1_eps, color = num_vaccines)) +
   geom_abline(intercept = 0, slope = 1, linetype = "dotted", color = "black", size = 0.8) +
-  geom_jitter(aes(shape = num_vaccines), width = 0.05, height = 0.05, size = 2.4, alpha = 0.9, stroke = 0.2) +
+  geom_jitter(aes(shape = num_vaccines), width = 0.05, height = 0.05, size = 2.4, alpha = 0.5, stroke = 0.2) +
   geom_smooth(
     aes(group = num_vaccines, fill = num_vaccines),
     method = "lm",
@@ -452,7 +496,7 @@ df_mrna_2022_plot <- mrna_svnt_long_2022 %>%
 
 p_log10_mrna_2022 <- ggplot(df_mrna_2022_plot, aes(x = Baseline_eps, y = Step1_eps, color = num_vaccines)) +
   geom_abline(intercept = 0, slope = 1, linetype = "dotted", color = "black", size = 0.8) +
-  geom_jitter(aes(shape = num_vaccines), width = 0.05, height = 0.05, size = 2.4, alpha = 0.9, stroke = 0.2) +
+  geom_jitter(aes(shape = num_vaccines), width = 0.05, height = 0.05, size = 2.4, alpha = 0.5, stroke = 0.2) +
   scale_color_manual(values = vaccine_colors, name = "Number of\nVaccines") +
   scale_fill_manual(values = vaccine_colors, name = "Number of\nVaccines") +
   scale_shape_manual(values = c(16, 17, 15), name = "Number of\nVaccines") +
