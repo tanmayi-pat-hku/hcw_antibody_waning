@@ -84,7 +84,7 @@ mrna_svnt_snapshot_2022_test <- svnt_snapshot_2022 %>%
     (is.na(dose1_brand) | dose1_brand == 1) &
     (is.na(dose2_brand) | dose2_brand == 1) &
     (is.na(dose3_brand) | dose3_brand == 1) &
-    (is.na(dose4_brand) | dose4_brand != 4) &
+    (is.na(dose4_brand) | dose4_brand == 1) &
     (is.na(dose5_brand) | dose5_brand != 4)
   ) %>%
   filter(num_vaccines != 1)
