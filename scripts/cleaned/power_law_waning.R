@@ -122,7 +122,6 @@ four_dose_powerlaw_plot <- ggplot() +
     axis.line = element_line(size = 0.5, color = "black")
   )
 
-
 figure_2_powerlaw <- (three_dose_powerlaw_plot + four_dose_powerlaw_plot) +
   plot_layout(ncol = 2) + 
   plot_annotation(tag_levels = "A")
@@ -130,4 +129,3 @@ figure_2_powerlaw <- (three_dose_powerlaw_plot + four_dose_powerlaw_plot) +
 print(figure_2_powerlaw)
 
 ggsave("figure_2_powerlaw.pdf", plot = figure_2_powerlaw, width = 15, height = 10)
-
