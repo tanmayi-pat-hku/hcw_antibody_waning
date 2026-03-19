@@ -1,9 +1,0 @@
-"Interval","Phase","Vaccine Series","Slope (log10/day)","Multiplicative Factor per Day","Percent Change per Day","Interpretation","Half-life (days)","N"
-"After Dose 2","Early (0-60 days)","1-1",-0.00041,0.99906,-0.094,"Decreases by 0.09% daily",740.8,54
-"After Dose 2","Middle (61-180 days)","1-1",-0.00066,0.99849,-0.151,"Decreases by 0.15% daily",457.5,772
-"After Dose 2","Late (181-365 days)","1-1",-0.0013,0.997,-0.3,"Decreases by 0.3% daily",230.7,511
-"After Dose 2","Overall (0-365 days)","1-1",-0.00094,0.99783,-0.217,"Decreases by 0.22% daily",319.2,1337
-"After Dose 2","Early (0-60 days)","4-4",-0.00534,0.98778,-1.222,"Decreases by 1.22% daily",56.4,21
-"After Dose 2","Middle (61-180 days)","4-4",-0.00236,0.99457,-0.543,"Decreases by 0.54% daily",127.3,105
-"After Dose 2","Late (181-365 days)","4-4",-0.00111,0.99744,-0.256,"Decreases by 0.26% daily",270.1,26
-"After Dose 2","Overall (0-365 days)","4-4",-0.00223,0.99489,-0.511,"Decreases by 0.51% daily",135.3,152
