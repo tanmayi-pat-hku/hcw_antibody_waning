@@ -47,7 +47,7 @@ one_labels <- c("1" = " B", "4" = "S")
 two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
 three_labels_svnt <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B", "1-1-4" = "B-B-S")
 three_labels_elisa <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B")
-
+four_labels_svnt <- c("1-1-1-1" =" B-B-B-B", "4-4-1-1" =" S-S-B-B", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
 
 ## Cohort Post-Infection Analysis 2022 
 ## Community Post-Infection Analysis 2021
@@ -124,7 +124,6 @@ five_dose_data <- data %>%
 #Source Baseline Value Measurements Function 
 source("scripts/helper/fc_get_baselines.R")
 
-
 #Calculate Baseline Values for ELISA AND sVNT 
 baseline_elisa <- get_baselines(data, "elisa_wt")  
 baseline_svnt <- get_baselines(data, "svnt_wt")    
@@ -146,7 +145,6 @@ median_baseline_svnt <- baseline_svnt %>%
 
 #Source Antibody Value Measurement Function
 source("scripts/helper/fc_vaccine_perm.R")
-
 
 
 # ELISA VALUES

@@ -19,6 +19,6 @@ boost_results_table <- bind_rows(
 
 #Print table
 print(boost_results_table)
-write.csv(boost_results_table, "boost_stats_table.csv", row.names = FALSE)
+write.csv(boost_results_table, "table2_boost_stats.csv", row.names = FALSE)
 
 

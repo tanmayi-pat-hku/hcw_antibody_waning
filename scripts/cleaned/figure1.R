@@ -60,10 +60,10 @@ elisa_baseline_wt <- ggplot() +
 response_colq <- "v1_elisa_wt"
 
 one_elisa_wt_plot <- ggplot() +
-  geom_jitter(data = one_valid_perms_e,
+  geom_jitter(data = one_elisa_wt$valid_perms,
               aes_string(x = "one_dose_permutation", y = response_colq, color = "one_dose_permutation"),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = one_dose_medians_e,
+  geom_crossbar(data = one_elisa_wt$medians,
                 aes_string(x = "one_dose_permutation", y = "median",  
                            ymin = "median", ymax = "median"),  
                 width = 0.5, colour = "black", size = 0.5) +  
@@ -91,10 +91,10 @@ one_elisa_wt_plot <- ggplot() +
 response_colq <- "v2_elisa_wt"
 
 two_elisa_wt_plot <- ggplot() +
-  geom_jitter(data = two_valid_perms_e,
+  geom_jitter(data = two_elisa_wt$valid_perms,
               aes_string(x = "two_dose_permutation", y = response_colq, color = "two_dose_permutation"),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = two_dose_medians_e,
+  geom_crossbar(data = two_elisa_wt$medians,
                 aes_string(x = "two_dose_permutation", y = "median",  
                            ymin = "median", ymax = "median"),  
                 width = 0.5, colour = "black", size = 0.5) +  
@@ -118,14 +118,15 @@ two_elisa_wt_plot <- ggplot() +
   )
 
 
-#Plot for ELISA THREE 
+#Plot for ELISA THREE
+
 response_colq <- "v3_elisa_wt"
 
 three_elisa_wt_plot <- ggplot() +
-  geom_jitter(data = three_valid_perms_e,
+  geom_jitter(data = three_elisa_wt$valid_perms,
               aes_string(x = "three_dose_permutation", y = response_colq, color = "three_dose_permutation"),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = three_dose_medians_e,
+  geom_crossbar(data = three_elisa_wt$medians,
                 aes_string(x = "three_dose_permutation", y = "median",  
                            ymin = "median", ymax = "median"),  
                 width = 0.5, colour = "black", size = 0.5) +  
@@ -265,10 +266,10 @@ svnt_baseline_wt <- ggplot() +
 response_colq <- "v1_svnt_wt"
 
 one_svnt_wt_plot <- ggplot() +
-  geom_jitter(data = one_valid_perms,
+  geom_jitter(data = one_svnt_wt$valid_perms,
               aes_string(x = "one_dose_permutation", y = response_colq, color = "one_dose_permutation"),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = one_dose_medians,
+  geom_crossbar(data = one_svnt_wt$medians,
                 aes_string(x = "one_dose_permutation", y = "median",  
                            ymin = "median", ymax = "median"),  
                 width = 0.5, colour = "black", size = 0.5) +  
@@ -295,10 +296,10 @@ one_svnt_wt_plot <- ggplot() +
 response_colq <- "v2_svnt_wt"
 
 two_svnt_wt_plot <- ggplot() +
-  geom_jitter(data = two_valid_perms,
+  geom_jitter(data = two_svnt_wt$valid_perms,
               aes(x = two_dose_permutation, y = !!sym(response_colq), color = two_dose_permutation),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = two_dose_medians,
+  geom_crossbar(data = two_svnt_wt$medians,
                 aes(x = two_dose_permutation, y = median, 
                     ymin = median, ymax = median),  
                 width = 0.5, colour = "black", size = 0.5) +
@@ -326,10 +327,10 @@ two_svnt_wt_plot <- ggplot() +
 response_colq <- "v3_svnt_wt"
 
 three_svnt_wt_plot <- ggplot() +
-  geom_jitter(data = three_valid_perms,
+  geom_jitter(data = three_svnt_wt$valid_perms,
               aes(x = three_dose_permutation, y = !!sym(response_colq), color = three_dose_permutation),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = three_dose_medians,
+  geom_crossbar(data = three_svnt_wt$medians,
                 aes(x = three_dose_permutation, y = median, 
                     ymin = median, ymax = median),  
                 width = 0.5, colour = "black", size = 0.5) +
@@ -354,15 +355,14 @@ three_svnt_wt_plot <- ggplot() +
 
 
 #Plot for sVNT FOUR
-four_labels_svnt <- c("1-1-1-1" =" B-B-B-B", "4-4-1-1" =" S-S-B-B", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
 
 response_colq <- "v4_svnt_wt"
 
 four_svnt_wt_plot <- ggplot() +
-  geom_jitter(data = four_valid_perms,
+  geom_jitter(data = four_svnt_wt$valid_perms,
               aes(x = four_dose_permutation, y = !!sym(response_colq), color = four_dose_permutation),
               alpha = 0.8, width = 0.18, size = 2.5) +
-  geom_crossbar(data = four_dose_medians,
+  geom_crossbar(data = four_svnt_wt$medians,
                 aes(x = four_dose_permutation, y = median, 
                     ymin = median, ymax = median),  
                 width = 0.5, colour = "black", size = 0.5) +
