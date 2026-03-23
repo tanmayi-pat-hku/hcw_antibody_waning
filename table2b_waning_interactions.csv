@@ -1,0 +1,7 @@
+"Dose","Variable","Difference in Waning","95% CI","Significant"
+"After dose 2","Sex (Male vs Female)",0.054,"[-0.014, 0.127]","No"
+"After dose 2","log_days:age_binOlder Adults (55+)",-0.006,"[-0.115, 0.096]","No"
+"After dose 2","log_days:age_binYounger Adults (21-35)",0.065,"[-0.003, 0.132]","No"
+"After dose 3","Sex (Male vs Female)",-0.003,"[-0.058, 0.049]","No"
+"After dose 3","log_days:age_binOlder Adults (55+)",-0.037,"[-0.086, 0.017]","No"
+"After dose 3","log_days:age_binYounger Adults (21-35)",0,"[-0.077, 0.085]","No"

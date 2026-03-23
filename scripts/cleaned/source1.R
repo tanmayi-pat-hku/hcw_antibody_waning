@@ -28,6 +28,20 @@ data <- data %>%
 
 community_data <- read.csv("./data/2021_community_elisa_sVNT.csv")
 
+# Create age/sex group bins
+
+data <- data %>%
+  mutate(
+    age_bin = case_when(
+      age_enrol >= 21 & age_enrol <= 35 ~ "Younger Adults (21-35)",
+      age_enrol > 35 & age_enrol <= 55 ~ "Adults (35-55)",
+      age_enrol > 55 ~ "Older Adults (55+)",
+      TRUE ~ NA_character_
+    ),
+    age_bin = as.factor(age_bin),
+    male = as.factor(male)
+  )
+
 #Load Label Strings for Permutation 1 and 2 
 one_labels <- c("1" = " B", "4" = "S")
 two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
@@ -133,67 +147,46 @@ median_baseline_svnt <- baseline_svnt %>%
 #Source Antibody Value Measurement Function
 source("scripts/helper/fc_vaccine_perm.R")
 
-#ELISA VALUES 
-##ONE
-one_elisa_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_elisa_wt, min_n = 5, dose_label = "1 Dose")
-
-one_valid_perms_e      <- one_elisa_wt$valid_perms
-one_dose_medians_e     <- one_elisa_wt$medians
-one_n_levels_e         <- one_elisa_wt$n_levels
-one_mid_x_e            <- one_elisa_wt$mid_x
 
 
-##TWO 
-two_elisa_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_elisa_wt, min_n = 5, dose_label = "2 Dose")
+# ELISA VALUES
 
-two_valid_perms_e      <- two_elisa_wt$valid_perms
-two_dose_medians_e     <- two_elisa_wt$medians
-two_n_levels_e         <- two_elisa_wt$n_levels
-two_mid_x_e            <- two_elisa_wt$mid_x
+##ONE (v1_date is the vaccine date for 1 dose)
+one_elisa_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_elisa_wt, 
+                                min_n = 5, dose_label = "1 Dose", 
+                                vaccine_date_col = "v1_date", infection_window_days = 180)
 
-#THREE
-three_elisa_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_elisa_wt, min_n = 5, dose_label = "3 Dose")
+##TWO (v2_date is the vaccine date for 2 doses)
+two_elisa_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_elisa_wt, 
+                                min_n = 5, dose_label = "2 Dose",
+                                vaccine_date_col = "v2_date", infection_window_days = 180)
 
-three_valid_perms_e      <- three_elisa_wt$valid_perms
-three_dose_medians_e     <- three_elisa_wt$medians
-three_n_levels_e         <- three_elisa_wt$n_levels
-three_mid_x_e            <- three_elisa_wt$mid_x
+#THREE (v3_date is the vaccine date for 3 doses)
+three_elisa_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_elisa_wt, 
+                                  min_n = 5, dose_label = "3 Dose",
+                                  vaccine_date_col = "v3_date", infection_window_days = 180)
 
+# sVNT values
 
+##ONE (v1_date is the vaccine date for 1 dose)
+one_svnt_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_svnt_wt, 
+                               min_n = 5, dose_label = "1 Dose",
+                               vaccine_date_col = "v1_date", infection_window_days = 180)
 
-#sVNT all Vaccine permutations 
-##ONE
-one_svnt_wt <- fc_perm_summary(one_dose_data, one_dose_permutation, v1_svnt_wt, min_n = 5, dose_label = "1 Dose")
+##TWO (v2_date is the vaccine date for 2 doses)
+two_svnt_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_svnt_wt, 
+                               min_n = 5, dose_label = "2 Dose",
+                               vaccine_date_col = "v2_date", infection_window_days = 180)
 
-one_valid_perms      <- one_svnt_wt$valid_perms
-one_dose_medians     <- one_svnt_wt$medians
-one_n_levels         <- one_svnt_wt$n_levels
-one_mid_x            <- one_svnt_wt$mid_x
+##THREE (v3_date is the vaccine date for 3 doses)
+three_svnt_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_svnt_wt, 
+                                 min_n = 5, dose_label = "3 Dose",
+                                 vaccine_date_col = "v3_date", infection_window_days = 180)
 
-##TWO 
-two_svnt_wt <- fc_perm_summary(two_dose_data, two_dose_permutation, v2_svnt_wt, min_n = 5, dose_label = "2 Dose")
-
-two_valid_perms      <- two_svnt_wt$valid_perms
-two_dose_medians     <- two_svnt_wt$medians
-two_n_levels         <- two_svnt_wt$n_levels
-two_mid_x            <- two_svnt_wt$mid_x
-
-##THREE
-three_svnt_wt <- fc_perm_summary(three_dose_data, three_dose_permutation, v3_svnt_wt, min_n = 5, dose_label = "3 Dose")
-
-three_valid_perms      <- three_svnt_wt$valid_perms
-three_dose_medians     <- three_svnt_wt$medians
-three_n_levels         <- three_svnt_wt$n_levels
-three_mid_x            <- three_svnt_wt$mid_x
-
-
-##FOUR
-four_svnt_wt <- fc_perm_summary(four_dose_data, four_dose_permutation, v4_svnt_wt, min_n = 5, dose_label = "4 Doses")
-
-four_valid_perms      <- four_svnt_wt$valid_perms
-four_dose_medians     <- four_svnt_wt$medians
-four_n_levels         <- four_svnt_wt$n_levels
-four_mid_x            <- four_svnt_wt$mid_x
+##FOUR (v4_date is the vaccine date for 4 doses)
+four_svnt_wt <- fc_perm_summary(four_dose_data, four_dose_permutation, v4_svnt_wt, 
+                                min_n = 5, dose_label = "4 Dose",
+                                vaccine_date_col = "v4_date", infection_window_days = 180)
 
 
 

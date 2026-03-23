@@ -33,3 +33,5 @@ four_dose_waning_elisa <- get_measurements_in_interval(four_dose_data, "dose3_da
 four_dose_waning_svnt <- get_measurements_in_interval(four_dose_data, "dose3_date", "dose4_date", weight_type = "svnt", permutation_col = "three_dose_permutation") %>%
   filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1"))
 
+
+

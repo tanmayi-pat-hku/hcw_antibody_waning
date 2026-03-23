@@ -1,26 +1,62 @@
-fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = "4 Doses") {
+fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = "X Doses", 
+                            vaccine_date_col = NULL, infection_window_days = 90) {
+  
   perm_colq     <- enquo(perm_col)
   response_colq <- enquo(response_col)
   perm_name     <- as_name(perm_colq)
-  #Filtering: Removes rows where either the permutation or the response variable is NA
+  
+  # Filtering: Remove rows where permutation or response is NA
   plot_data <- df %>%
     filter(!is.na(!!perm_colq) & !is.na(!!response_colq)) %>%
     mutate(!!perm_colq := factor(as.character(!!perm_colq)),
            dose_count = dose_label)
-  #Grouping: Groups the data by the permutation column.
-  #Filtering: Keeps only those groups where the count of entries is greater than or equal to min_n.
-  #Re-factoring: Ensures that the levels of the permutation factor are unique.
   
+  # If vaccine_date_col is provided, filter out recent infections
+  if (!is.null(vaccine_date_col)) {
+    vaccine_date_sym <- sym(vaccine_date_col)
+    
+    plot_data <- plot_data %>%
+      rowwise() %>%
+      mutate(
+        # Check if there's any positive infection within `infection_window_days` days before the vaccine date
+        recent_infection = any(
+          # Check posdate_p1
+          (!is.na(posdate_p1) & !is.na(!!vaccine_date_sym) & 
+             posdate_p1 >= (!!vaccine_date_sym - infection_window_days) & 
+             posdate_p1 <= !!vaccine_date_sym),
+          # Check posdate_p2
+          (!is.na(posdate_p2) & !is.na(!!vaccine_date_sym) & 
+             posdate_p2 >= (!!vaccine_date_sym - infection_window_days) & 
+             posdate_p2 <= !!vaccine_date_sym),
+          # Check posdate_p3
+          (!is.na(posdate_p3) & !is.na(!!vaccine_date_sym) & 
+             posdate_p3 >= (!!vaccine_date_sym - infection_window_days) & 
+             posdate_p3 <= !!vaccine_date_sym),
+          # Check posdate_p4
+          (!is.na(posdate_p4) & !is.na(!!vaccine_date_sym) & 
+             posdate_p4 >= (!!vaccine_date_sym - infection_window_days) & 
+             posdate_p4 <= !!vaccine_date_sym)
+        )
+      ) %>%
+      ungroup() %>%
+      # Filter out rows with recent infections
+      filter(!recent_infection) %>%
+      select(-recent_infection)
+  }
+  
+  # Grouping and filtering by minimum sample size
   valid_perms <- plot_data %>%
     group_by(!!perm_colq) %>%
     filter(n() >= min_n) %>%
     ungroup() %>%
     mutate(!!perm_colq := factor(as.character(!!perm_colq),
                                  levels = unique(as.character(!!perm_colq))))
-  #This creates a new data frame that counts the number of valid entries for each permutation.
+  
+  # Count valid entries per permutation
   valid_perm_count <- valid_perms %>%
     count(!!perm_colq, name = "count")
   
+  # Calculate medians
   medians <- valid_perms %>%
     group_by(!!perm_colq) %>%
     summarise(median = median(!!response_colq, na.rm = TRUE), .groups = "drop") %>%
@@ -43,7 +79,6 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
   )
 }
 
-
 #Parameters:
 #df: The input dataframe containing the data to summarize.
 #perm_col: The column representing permutations of vaccine brands (e.g., one_dose_permutation, two_dose_permutation).
@@ -59,5 +94,4 @@ fc_perm_summary <- function(df, perm_col, response_col, min_n = 5, dose_label = 
 #perms: The levels of valid permutations.
 #n_levels: The total number of unique permutation levels.
 #mid_x: A calculated midpoint for plotting purposes.
-
 

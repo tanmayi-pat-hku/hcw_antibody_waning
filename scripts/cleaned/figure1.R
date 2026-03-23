@@ -24,6 +24,7 @@ community_cohort_elisa_plot <- ggplot(community_cohort_elisa_data, aes(x = group
         axis.line = element_line(size = 0.5, color = "black"))
 
 #ELISA Baseline Graph 
+
 baseline_elisa$baseline_value <- as.numeric(baseline_elisa$baseline_value)
 
 elisa_baseline_wt <- ggplot() +
@@ -54,7 +55,8 @@ elisa_baseline_wt <- ggplot() +
   )
 
 
-#Plot for ELISA ONE 
+#Plot for ELISA ONE
+
 response_colq <- "v1_elisa_wt"
 
 one_elisa_wt_plot <- ggplot() +
@@ -85,6 +87,7 @@ one_elisa_wt_plot <- ggplot() +
   )
 
 #Plot for ELISA TWO 
+
 response_colq <- "v2_elisa_wt"
 
 two_elisa_wt_plot <- ggplot() +
@@ -153,7 +156,9 @@ empty_plot <- ggplot() +
 #########################################
 
 #Panel Generation for Boost Analysis 
+
 #ELISA 
+
 y_limits <- c(0, 6) 
 
 elisa_baseline_wt <- elisa_baseline_wt + scale_y_continuous(limits = y_limits, breaks = seq(0, 6, by = 0.5)) +
@@ -448,7 +453,7 @@ svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svn
 
 
 
-####Make Final Panels 
+#### Make Final Panels 
 
 figure_1 <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
   plot_annotation(title = "WT sVNT and RBD ELISA", 

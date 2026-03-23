@@ -1,123 +1,160 @@
-
-fit_powerlaw_with_boot <- function(data, n_boot = 500, seed = 123) {
+fit_powerlaw_with_boot_adj <- function(data, n_boot = 500, seed = 123) {
   
   # Prepare data
   model_data <- data %>%
     mutate(
       log_days = log(days_since_dose1 + 0.01),
       log_weight = log(weight + 0.01),
-      permutation = as.factor(permutation)
+      permutation = as.factor(permutation),
+      male = as.factor(male),
+      age_bin = as.factor(age_bin)
     )
   
-  # Fit model
-  model <- lmer(log_weight ~ log_days * permutation + (1 | id), 
+  # Fit model with interactions to test if waning differs by age/sex
+  model <- lmer(log_weight ~ log_days * permutation + male + age_bin + 
+                  log_days:male + log_days:age_bin + (1 | id), 
                 data = model_data,
                 control = lmerControl(optimizer = "bobyqa"))
   
-  # Create prediction grid
+  # Create prediction grid (all combinations)
   pred_grid <- expand.grid(
     days_since_dose1 = seq(0, 420, length.out = 100),
-    permutation = levels(model_data$permutation)  # Use levels() not unique()
+    permutation = levels(model_data$permutation),
+    male = levels(model_data$male),
+    age_bin = levels(model_data$age_bin)
   ) %>%
     mutate(log_days = log(days_since_dose1 + 0.01))
   
-  # Function to predict on newdata for bootstrapping
-  pred_fun <- function(.) {
-    predict(., newdata = pred_grid, re.form = NA)
-  }
-  
-  # Parametric bootstrap
+  # Bootstrap predictions
   set.seed(seed)
+  pred_fun <- function(.) predict(., newdata = pred_grid, re.form = NA)
   boot_obj <- bootMer(model, pred_fun, nsim = n_boot, parallel = "multicore", ncpus = 4)
   
-  # Calculate CIs
-  cis <- apply(boot_obj$t, 2, function(x) {
-    quantile(x, probs = c(0.025, 0.975), na.rm = TRUE)
-  })
-  
-  # Original predictions
+  # Calculate prediction CIs and add to grid
+  cis <- apply(boot_obj$t, 2, function(x) quantile(x, c(0.025, 0.975), na.rm = TRUE))
   original_pred <- predict(model, newdata = pred_grid, re.form = NA)
   
-  # Add to prediction grid
-  pred_grid$pred_weight <- exp(original_pred) - 0.01
-  pred_grid$lower <- exp(cis[1, ]) - 0.01
-  pred_grid$upper <- exp(cis[2, ]) - 0.01
+  pred_grid <- pred_grid %>%
+    mutate(
+      pred_weight = pmax(pmin(exp(original_pred) - 0.01, 100), 0),
+      lower = pmax(pmin(exp(cis[1, ]) - 0.01, 100), 0),
+      upper = pmax(pmin(exp(cis[2, ]) - 0.01, 100), 0)
+    )
   
-  # Ensure within bounds
-  pred_grid$pred_weight <- pmax(pmin(pred_grid$pred_weight, 100), 0)
-  pred_grid$lower <- pmax(pmin(pred_grid$lower, 100), 0)
-  pred_grid$upper <- pmax(pmin(pred_grid$upper, 100), 0)
-  
-  # FIXED: Extract waning rates properly
+  # Extract fixed effects
   fix <- fixef(model)
   perms <- levels(model_data$permutation)
+  male_lvls <- levels(model_data$male)
+  age_lvls <- levels(model_data$age_bin)
   
-  waning_rates <- data.frame(
-    permutation = perms,
-    waning_rate = NA,
-    lower_ci = NA,
-    upper_ci = NA
-  )
+  # Create waning rates for all demographic combinations
+  waning_rates <- expand.grid(permutation = perms, male = male_lvls, age_bin = age_lvls,
+                              stringsAsFactors = FALSE) %>%
+    mutate(waning_rate = fix["log_days"])
   
-  # Reference group (first permutation)
-  waning_rates$waning_rate[1] <- fix["log_days"]
+  # Add permutation interactions
+  for(perm in perms[-1]) {
+    pattern <- paste0("log_days:permutation", perm)
+    term <- grep(pattern, names(fix), value = TRUE)[1]
+    if(!is.na(term)) waning_rates$waning_rate[waning_rates$permutation == perm] <- 
+      waning_rates$waning_rate[waning_rates$permutation == perm] + fix[term]
+  }
   
-  # For other permutations, find the interaction term
-  for(i in 2:length(perms)) {
-    # Look for any coefficient that contains this permutation
-    # The actual name might be "log_days:permutation4-4" or "log_days:permutation4-4-1"
-    pattern <- paste0("log_days:permutation", perms[i])
-    matching_term <- grep(pattern, names(fix), value = TRUE)
-    
-    if(length(matching_term) > 0) {
-      waning_rates$waning_rate[i] <- fix["log_days"] + fix[matching_term[1]]
-    } else {
-      # If no interaction found, try without "permutation" in the name
-      pattern2 <- paste0("log_days:", perms[i])
-      matching_term2 <- grep(pattern2, names(fix), value = TRUE)
-      
-      if(length(matching_term2) > 0) {
-        waning_rates$waning_rate[i] <- fix["log_days"] + fix[matching_term2[1]]
-      } else {
-        warning(paste("No interaction term found for", perms[i]))
-      }
+  # Add sex interaction
+  if("log_days:male1" %in% names(fix)) {
+    waning_rates$waning_rate[waning_rates$male == "1"] <- 
+      waning_rates$waning_rate[waning_rates$male == "1"] + fix["log_days:male1"]
+  }
+  
+  # Add age interactions
+  for(age in age_lvls[-1]) {
+    pattern <- paste0("log_days:age_bin", age)
+    term <- grep(pattern, names(fix), value = TRUE)[1]
+    if(!is.na(term)) {
+      waning_rates$waning_rate[waning_rates$age_bin == age] <- 
+        waning_rates$waning_rate[waning_rates$age_bin == age] + fix[term]
     }
   }
   
-  # FIXED: Bootstrap waning rates with same logic
+  # Bootstrap waning rates
   rate_fun <- function(.) {
     f <- fixef(.)
-    rates <- c(f["log_days"])
-    
-    for(i in 2:length(perms)) {
-      # Try both possible patterns
-      pattern1 <- paste0("log_days:permutation", perms[i])
-      pattern2 <- paste0("log_days:", perms[i])
+    rates <- numeric(nrow(waning_rates))
+    for(i in 1:nrow(waning_rates)) {
+      rate <- f["log_days"]
+      perm <- waning_rates$permutation[i]
+      sex <- waning_rates$male[i]
+      age <- waning_rates$age_bin[i]
       
-      if(pattern1 %in% names(f)) {
-        rates <- c(rates, f["log_days"] + f[pattern1])
-      } else if(pattern2 %in% names(f)) {
-        rates <- c(rates, f["log_days"] + f[pattern2])
-      } else {
-        rates <- c(rates, NA)
+      if(perm != perms[1]) {
+        pattern <- paste0("log_days:permutation", perm)
+        if(pattern %in% names(f)) rate <- rate + f[pattern]
       }
+      if(sex == "1" && "log_days:male1" %in% names(f)) rate <- rate + f["log_days:male1"]
+      if(age != age_lvls[1]) {
+        pattern <- paste0("log_days:age_bin", age)
+        if(pattern %in% names(f)) rate <- rate + f[pattern]
+      }
+      rates[i] <- rate
     }
     return(rates)
   }
   
   rate_boot <- bootMer(model, rate_fun, nsim = n_boot, parallel = "multicore", ncpus = 4)
   
-  for(i in 1:length(perms)) {
-    waning_rates$lower_ci[i] <- quantile(rate_boot$t[,i], 0.025, na.rm = TRUE)
-    waning_rates$upper_ci[i] <- quantile(rate_boot$t[,i], 0.975, na.rm = TRUE)
+  waning_rates <- waning_rates %>%
+    mutate(
+      lower_ci = apply(rate_boot$t, 2, function(x) quantile(x, 0.025, na.rm = TRUE)),
+      upper_ci = apply(rate_boot$t, 2, function(x) quantile(x, 0.975, na.rm = TRUE))
+    )
+  
+  # Bootstrap interaction effects
+  interaction_terms <- names(fix)[grepl("log_days:male|log_days:age_bin", names(fix))]
+  
+  if(length(interaction_terms) > 0) {
+    interaction_fun <- function(.) fixef(.)[interaction_terms]
+    interaction_boot <- bootMer(model, interaction_fun, nsim = n_boot, parallel = "multicore", ncpus = 4)
+    
+    interaction_effects <- data.frame(
+      term = interaction_terms,
+      estimate = fix[interaction_terms],
+      lower_ci = apply(interaction_boot$t, 2, function(x) quantile(x, 0.025, na.rm = TRUE)),
+      upper_ci = apply(interaction_boot$t, 2, function(x) quantile(x, 0.975, na.rm = TRUE))
+    ) %>%
+      mutate(significant = !(lower_ci < 0 & upper_ci > 0))
+  } else {
+    interaction_effects <- data.frame()
   }
   
-  # Return everything
+  # Main effects (baseline differences)
+  main_effects <- data.frame(
+    term = names(fix)[grepl("^male|^age_bin", names(fix))],
+    estimate = fix[grepl("^male|^age_bin", names(fix))],
+    stringsAsFactors = FALSE
+  )
+  
+  # Return results
   list(
     model = model,
     predictions = pred_grid,
     waning_rates = waning_rates,
+    main_effects = main_effects,
+    interaction_effects = interaction_effects,
     n_participants = length(unique(model_data$id)),
     n_obs = nrow(model_data)
   )
+}
+
+# Function to create marginal predictions (averaged over sex and age) 
+# Model now accounts for Age and Sex 
+
+create_marginal_predictions <- function(model_results) {
+  model_results$predictions %>%
+    group_by(days_since_dose1, permutation) %>%
+    summarise(
+      pred_weight = mean(pred_weight, na.rm = TRUE),
+      lower = mean(lower, na.rm = TRUE),
+      upper = mean(upper, na.rm = TRUE),
+      .groups = 'drop'
+    )
 }
