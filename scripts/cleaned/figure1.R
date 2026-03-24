@@ -353,7 +353,6 @@ three_svnt_wt_plot <- ggplot() +
         axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
 
-
 #Plot for sVNT FOUR
 
 response_colq <- "v4_svnt_wt"
