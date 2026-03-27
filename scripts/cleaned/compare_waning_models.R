@@ -1,4 +1,4 @@
-source("scripts/cleaned/power_law_waning.R")
+source("scripts/cleaned/power_law.R")
 
 # Simple AIC/BIC comparison between linear, power law, and exponential models
 # Including age and sex adjustments

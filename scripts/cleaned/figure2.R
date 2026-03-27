@@ -1,4 +1,5 @@
 # Power law Waning 
+source("scripts/cleaned/source2.R")
 source("scripts/cleaned/power_law.R")
 
 library(librarian)

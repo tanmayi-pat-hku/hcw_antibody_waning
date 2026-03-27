@@ -1,3 +1,4 @@
+#Post-vaccine waning
 fit_powerlaw_with_boot_adj <- function(data, n_boot = 500, seed = 123) {
   
   # Prepare data
@@ -145,12 +146,99 @@ fit_powerlaw_with_boot_adj <- function(data, n_boot = 500, seed = 123) {
   )
 }
 
-# Function to create marginal predictions (averaged over sex and age) 
-# Model now accounts for Age and Sex 
+#Fit Powerlaw for Post-infection
+fit_powerlaw_infection <- function(data, n_boot = 500, seed = 123) {
+  
+  # Prepare data
+  model_data <- data %>%
+    mutate(
+      log_days = log(days_since_dose1 + 0.01),
+      log_weight = log(weight + 0.01),
+      male = as.factor(male),
+      age_bin = as.factor(age_bin)
+    ) %>%
+    # Remove rows with infinite values
+    filter(is.finite(log_days), is.finite(log_weight))
+  
+  # Fit model WITHOUT permutation (only one group)
+  model <- lmer(log_weight ~ log_days + male + age_bin + 
+                  log_days:male + log_days:age_bin + (1 | id), 
+                data = model_data,
+                control = lmerControl(optimizer = "bobyqa"))
+  
+  # Create prediction grid
+  pred_grid <- expand.grid(
+    days_since_dose1 = seq(0, 420, length.out = 100),
+    male = levels(model_data$male),
+    age_bin = levels(model_data$age_bin)
+  ) %>%
+    mutate(log_days = log(days_since_dose1 + 0.01))
+  
+  # Bootstrap predictions
+  set.seed(seed)
+  pred_fun <- function(.) predict(., newdata = pred_grid, re.form = NA)
+  boot_obj <- bootMer(model, pred_fun, nsim = n_boot, parallel = "multicore", ncpus = 4)
+  
+  # Calculate CIs
+  cis <- apply(boot_obj$t, 2, function(x) quantile(x, c(0.025, 0.975), na.rm = TRUE))
+  original_pred <- predict(model, newdata = pred_grid, re.form = NA)
+  
+  pred_grid <- pred_grid %>%
+    mutate(
+      pred_weight = pmax(pmin(exp(original_pred) - 0.01, 100), 0),
+      lower = pmax(pmin(exp(cis[1, ]) - 0.01, 100), 0),
+      upper = pmax(pmin(exp(cis[2, ]) - 0.01, 100), 0)
+    )
+  
+  # Extract waning rate
+  fix <- fixef(model)
+  
+  waning_rate <- data.frame(
+    waning_rate = fix["log_days"],
+    lower_ci = NA,
+    upper_ci = NA
+  )
+  
+  # Bootstrap waning rate
+  rate_fun <- function(.) {
+    f <- fixef(.)
+    return(f["log_days"])
+  }
+  
+  rate_boot <- bootMer(model, rate_fun, nsim = n_boot, parallel = "multicore", ncpus = 4)
+  
+  waning_rate <- waning_rate %>%
+    mutate(
+      lower_ci = quantile(rate_boot$t, 0.025, na.rm = TRUE),
+      upper_ci = quantile(rate_boot$t, 0.975, na.rm = TRUE)
+    )
+  
+  # Return results
+  list(
+    model = model,
+    predictions = pred_grid,
+    waning_rate = waning_rate,
+    n_participants = length(unique(model_data$id)),
+    n_obs = nrow(model_data)
+  )
+}
 
+# Post vaccination: function to create marginal predictions (averaged over sex and age)
 create_marginal_predictions <- function(model_results) {
   model_results$predictions %>%
     group_by(days_since_dose1, permutation) %>%
+    summarise(
+      pred_weight = mean(pred_weight, na.rm = TRUE),
+      lower = mean(lower, na.rm = TRUE),
+      upper = mean(upper, na.rm = TRUE),
+      .groups = 'drop'
+    )
+}
+
+#Post infection:function to create marginal predictions (averaged over sex and age)
+create_marginal_predictions_infection <- function(model_results) {
+  model_results$predictions %>%
+    group_by(days_since_dose1) %>%  
     summarise(
       pred_weight = mean(pred_weight, na.rm = TRUE),
       lower = mean(lower, na.rm = TRUE),

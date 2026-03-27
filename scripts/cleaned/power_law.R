@@ -23,7 +23,7 @@ source("scripts/helper/fc_power_law_bootstrap.R")
 #     - Captures individual variation beyond fixed effects
 
 
-# Run adjusted models with interactions
+# Post-vaccinatation: Run adjusted models with interactions
 after_dose2_adj <- fit_powerlaw_with_boot_adj(three_dose_waning_svnt, n_boot = 500)
 after_dose3_adj <- fit_powerlaw_with_boot_adj(four_dose_waning_svnt, n_boot = 500)
 
@@ -31,3 +31,9 @@ after_dose3_adj <- fit_powerlaw_with_boot_adj(four_dose_waning_svnt, n_boot = 50
 # CREATE MARGINAL PREDICTIONS FOR PLOTS across age bins and sex 
 dose2_marginal <- create_marginal_predictions(after_dose2_adj)
 dose3_marginal <- create_marginal_predictions(after_dose3_adj)
+
+#Post-Infection: adjusted models with interactions
+post_infection_adj <- fit_powerlaw_infection(post_infection_svnt, n_boot = 500) 
+
+# CREATE MARGINAL PREDICTIONS FOR PLOTS across age bins and sex 
+post_infection_marginal <- create_marginal_predictions_infection(post_infection_adj)
