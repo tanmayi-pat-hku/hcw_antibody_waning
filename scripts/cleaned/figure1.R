@@ -454,16 +454,21 @@ elisa_wt_combined_plot_with_community <- (
 
 # Clean Figures 
 # Wrap each combined plot as a single element
+
 elisa_wt_combined_plot_with_community <- wrap_elements(elisa_wt_combined_plot_with_community)
 svnt_wt_combined_plot_with_community <- wrap_elements(svnt_wt_combined_plot_with_community)
 
 
 #### Make Final Panels 
-figure_1 <- (elisa_wt_combined_plot_with_community / svnt_wt_combined_plot_with_community) + 
-  plot_annotation(title = "WT ELISA and sVNT",
-                  tag_levels = "A",
-                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5))) &
-  theme(plot.tag = element_text(face = "bold", size = 20))
+figure_1 <- (elisa_wt_combined_plot_with_community / svnt_wt_combined_plot_with_community) +
+  plot_annotation(
+    title = "WT ELISA and sVNT",
+    tag_levels = "A",
+    theme = ggplot2::theme(
+      plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+      plot.tag   = element_text(face = "bold", size = 20)
+    )
+  )
 
 ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 15)
 
