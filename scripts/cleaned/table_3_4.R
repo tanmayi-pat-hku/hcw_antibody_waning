@@ -1,5 +1,6 @@
 source("scripts/cleaned/figure2.R")
 source("scripts/cleaned/power_law.R")
+source("scripts/helper/fc_power_law_bootstrap.R")
 
 # Table 3 
 
@@ -16,17 +17,15 @@ sample_sizes <- bind_rows(
 )
 
 # TABLE: WANING RATES BY VACCINE SERIES
+
+marginal_rates_dose2 <- get_marginal_waning(after_dose2_adj, n_boot = 500)
+marginal_rates_dose3 <- get_marginal_waning(after_dose3_adj, n_boot = 500)
+
+
 waning_rates_table <- bind_rows(
-  after_dose2_adj$waning_rates %>% mutate(Dose = "After dose 2"),
-  after_dose3_adj$waning_rates %>% mutate(Dose = "After dose 3")
+  marginal_rates_dose2 %>% mutate(Dose = "After dose 2"),
+  marginal_rates_dose3 %>% mutate(Dose = "After dose 3")
 ) %>%
-  group_by(Dose, permutation) %>%
-  summarise(
-    waning_rate = mean(waning_rate),
-    lower_ci = mean(lower_ci),
-    upper_ci = mean(upper_ci),
-    .groups = 'drop'
-  ) %>%
   left_join(sample_sizes, by = c("Dose", "permutation")) %>%
   mutate(
     `Group (n)` = paste0(permutation, " (n=", n, ")"),
@@ -34,25 +33,13 @@ waning_rates_table <- bind_rows(
     `95% CI` = paste0("[", round(lower_ci, 2), ", ", round(upper_ci, 2), "]"),
     `% at 90 days` = round(100 * (90 ^ waning_rate), 1),
     `% at 180 days` = round(100 * (180 ^ waning_rate), 1),
-    `Half-life (days)` = case_when(
-      waning_rate > -0.05 ~ "Stable",
-      TRUE ~ as.character(round(0.5^(1/waning_rate), 0))
-    )
+    `Days to 50% of day 1` = ifelse(waning_rate > -0.05, "Stable (>500 days)",
+                                    as.character(round(0.5^(1/waning_rate), 0))),
+    `Significant (vs reference)` = significant
   ) %>%
-  group_by(Dose) %>%
-  mutate(
-    ref_lower = first(lower_ci),
-    ref_upper = first(upper_ci),
-    `Significant` = case_when(
-      permutation == first(permutation) ~ "Ref",
-      upper_ci < ref_lower ~ "Yes",
-      lower_ci > ref_upper ~ "Yes",
-      TRUE ~ "No"
-    )
-  ) %>%
-  ungroup() %>%
   select(Dose, `Group (n)`, `Waning Rate`, `95% CI`, 
-         `% at 90 days`, `% at 180 days`, `Half-life (days)`, `Significant`)
+         `% at 90 days`, `% at 180 days`, `Days to 50% of day 1`, 
+         `Significant (vs reference)`)
 
 # DEMOGRAPHIC EFFECTS
 

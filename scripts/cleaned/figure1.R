@@ -9,13 +9,13 @@ community_cohort_elisa_plot <- ggplot(community_cohort_elisa_data, aes(x = group
   geom_crossbar(data = community_cohort_elisa_median, aes(x = group, y = median, ymin = median, ymax = median), 
                 width = 0.4, colour = "black", size = 0.5) +
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 0.5)) + 
-  scale_color_manual(values = c("Cohort" = "darkred", "Community" = "deeppink")) +
+  scale_color_manual(values = c("Cohort" = "#CD5C5C", "Community" = "deeppink")) +
   labs(x = NULL, y = "WT RBD ELISA (OD value)", caption = "Post-Infection") + 
   theme_bw(base_size = 12) + 
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
         plot.title = element_text(face = "bold", size = 14), 
         axis.title = element_text(face = "bold"), 
-        axis.text.x = element_text(face = "bold"), 
+        axis.text.x = element_text(size = 12, face = "bold"), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         axis.ticks = element_blank(), 
@@ -41,17 +41,19 @@ elisa_baseline_wt <- ggplot() +
   labs(x = NULL,
        y = "WT RBD ELISA (OD value)",
        caption = "Baseline") +  
-  theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme_bw(base_size = 12) + 
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
-        axis.ticks = element_line(),  
+        axis.ticks = element_line(),
+        axis.text.y = element_text(size = 13),
+        axis.title.y = element_text(size = 14),
         legend.position = "none",
         panel.border = element_blank(),
-        axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
+        axis.line = element_line(size = 0.5, color = "black", linetype = "solid") 
   )
 
 
@@ -74,10 +76,10 @@ one_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "1 Dose") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -105,10 +107,10 @@ two_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "2 Doses") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -116,7 +118,6 @@ two_elisa_wt_plot <- ggplot() +
         panel.border = element_blank(),
         axis.line = element_line(size = 0.5, color = "black", linetype = "solid")
   )
-
 
 #Plot for ELISA THREE
 
@@ -137,10 +138,10 @@ three_elisa_wt_plot <- ggplot() +
        y = "WT RBD ELISA (OD value)",
        caption = "3 Doses") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -152,7 +153,6 @@ three_elisa_wt_plot <- ggplot() +
 empty_plot <- ggplot() + 
   theme_void() + 
   theme(plot.margin = margin(0, 0, 0, 0))
-
 
 #########################################
 
@@ -195,21 +195,6 @@ three_elisa_wt_plot <- three_elisa_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
-elisa_wt_combined_plot_with_community <- (
-  elisa_baseline_wt + community_cohort_elisa_plot + 
-    one_elisa_wt_plot + 
-    two_elisa_wt_plot + 
-    three_elisa_wt_plot + 
-    empty_plot 
-) + 
-  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + 
-  plot_annotation(title = "WT RBD ELISA", 
-                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
-  theme(plot.background = element_blank(),
-        panel.border = element_blank(),    
-        plot.margin = margin(0, 0, 0, 0))
-
-
 #Boost Analysis: sVNT 
 
 # Create the combined plot
@@ -218,13 +203,13 @@ community_cohort_svnt_plot <- ggplot(community_cohort_svnt_data, aes(x = group, 
   geom_crossbar(data = community_cohort_svnt_median, aes(x = group, y = median, ymin = median, ymax = median), 
                 width = 0.4, colour = "black", size = 0.5) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) + 
-  scale_color_manual(values = c("Cohort" = "darkred", "Community" = "deeppink")) +
+  scale_color_manual(values = c("Cohort" = "#CD5C5C", "Community" = "deeppink")) +
   labs(x = NULL, y = "WT sVNT Inhibition (%)", caption = "Post-Infection") + 
   theme_bw(base_size = 12) + 
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5), 
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5), 
         plot.title = element_text(face = "bold", size = 14), 
         axis.title = element_text(face = "bold"), 
-        axis.text.x = element_text(face = "bold"), 
+        axis.text.x = element_text(size = 12, face = "bold"), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         axis.ticks = element_blank(), 
@@ -249,10 +234,11 @@ svnt_baseline_wt <- ggplot() +
        y = "WT sVNT Inhibition (%)",
        caption = "Baseline") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),
+        axis.text.y = element_text(size = 13, angle = 0, hjust = 0.5, vjust = 0.5),
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -280,10 +266,10 @@ one_svnt_wt_plot <- ggplot() +
        y = "WT sVNT Inhibition (%)",
        caption = "1 Dose") +  
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -310,10 +296,10 @@ two_svnt_wt_plot <- ggplot() +
        caption = "2 Doses") +  
   theme_bw(base_size = 12) +  
   scale_color_manual(values = c("1-1" = "#1F77B4", "4-4" = "#FF7F0E")) +
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -341,10 +327,10 @@ three_svnt_wt_plot <- ggplot() +
        caption = "3 Doses") +  
   scale_color_manual(values = c("1-1-1" = "#1F77B4", "4-4-4" = "#FF7F0E","4-4-1"= "#1B5E20", "1-1-4" = "#4A148C")) +
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -373,16 +359,16 @@ four_svnt_wt_plot <- ggplot() +
   scale_color_manual(values = c(
     "1-1-1-1" = "#1F77B4",  
     "1-1-1-9" = "#2CA02C",  
-    "4-4-1-1" = "#D62728",   
+    "4-4-1-1" = "#E1AD01",   
     "4-4-1-9" = "#9467BD",   
     "4-4-4-4" = "#8C564B",   
     "4-4-4-1" = "#E377C2"   
   )) +
   theme_bw(base_size = 12) +  
-  theme(plot.caption = element_text(face = "bold", size = 10, hjust = 0.5),
+  theme(plot.caption = element_text(face = "bold", size = 14, hjust = 0.5),
         plot.title = element_text(face = "bold", size = 14),
         axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, face = "bold"),  
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank(),  
         axis.ticks = element_line(),  
@@ -439,24 +425,45 @@ four_svnt_wt_plot <- four_svnt_wt_plot +
         axis.ticks.y = element_blank(), 
         axis.line.y = element_blank())
 
+## Make Final Figures
+
 svnt_wt_combined_plot_with_community <- (svnt_baseline_wt + community_cohort_svnt_plot + one_svnt_wt_plot + 
                                            two_svnt_wt_plot + 
                                            three_svnt_wt_plot + 
                                            four_svnt_wt_plot) + 
-  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + plot_annotation(title = "WT sVNT", 
+  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + plot_annotation(title = NULL, 
                                                                                     theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) +
   theme(plot.background = element_blank(),
         plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
-        panel.border = element_blank(), 
+        panel.border = element_blank(),
         plot.margin = margin(0, 0, 0, 0))
 
+elisa_wt_combined_plot_with_community <- (
+  elisa_baseline_wt + community_cohort_elisa_plot + 
+    one_elisa_wt_plot + 
+    two_elisa_wt_plot + 
+    three_elisa_wt_plot + 
+    empty_plot 
+) + 
+  plot_layout(widths = c(1.0, 1.0, 1.0, 1.0, 2.0, 2.0), ncol = 6) + 
+  plot_annotation(title = NULL, 
+                  theme = theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5))) + 
+  theme(plot.background = element_blank(),
+        panel.border = element_blank(),    
+        plot.margin = margin(0, 0, 0, 0)) 
+
+# Clean Figures 
+# Wrap each combined plot as a single element
+elisa_wt_combined_plot_with_community <- wrap_elements(elisa_wt_combined_plot_with_community)
+svnt_wt_combined_plot_with_community <- wrap_elements(svnt_wt_combined_plot_with_community)
 
 
 #### Make Final Panels 
-
-figure_1 <- (svnt_wt_combined_plot_with_community / elisa_wt_combined_plot_with_community) + 
-  plot_annotation(title = "WT sVNT and RBD ELISA", 
-                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5), tag_levels = 'A')) 
+figure_1 <- (elisa_wt_combined_plot_with_community / svnt_wt_combined_plot_with_community) + 
+  plot_annotation(title = "WT ELISA and sVNT",
+                  tag_levels = "A",
+                  theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5))) &
+  theme(plot.tag = element_text(face = "bold", size = 20))
 
 ggsave("figure_1.pdf", plot = figure_1, width = 24, height = 15)
 

@@ -10,7 +10,11 @@ shelf(dplyr,
       readxl, 
       tidyr, 
       rlang, 
-      patchwork  
+      patchwork,
+      lme4,
+      ggsignif,
+      ggpubr,
+      emmeans
 )
 
 
@@ -43,8 +47,8 @@ data <- data %>%
   )
 
 #Load Label Strings for Permutation 1 and 2 
-one_labels <- c("1" = " B", "4" = "S")
-two_labels <- c("1-1" =" B-B", "4-4" ="S-S")
+one_labels <- c("1" = "B", "4" = "S")
+two_labels <- c("1-1" ="B-B", "4-4" ="S-S")
 three_labels_svnt <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B", "1-1-4" = "B-B-S")
 three_labels_elisa <- c("4-4-1" ="S-S-B", "4-4-4" ="S-S-S", "1-1-1" = "B-B-B")
 four_labels_svnt <- c("1-1-1-1" =" B-B-B-B", "4-4-1-1" =" S-S-B-B", "4-4-4-4" ="S-S-S-S","4-4-4-1" ="S-S-S-B")
@@ -78,8 +82,11 @@ community_data_svnt <- community_data %>%
   select(value = sVNT, group)
 
 # Combine the datasets
-community_cohort_elisa_data <- bind_rows(cohort_data_elisa, community_data_elisa)
-community_cohort_svnt_data <- bind_rows(cohort_data_svnt, community_data_svnt)
+community_cohort_elisa_data <- bind_rows(cohort_data_elisa, community_data_elisa) %>% 
+  filter(group == "Cohort")
+
+community_cohort_svnt_data <- bind_rows(cohort_data_svnt, community_data_svnt) %>% 
+  filter(group == "Cohort")
 
 # Calculate median values for each group
 community_cohort_elisa_median <- community_cohort_elisa_data %>%
