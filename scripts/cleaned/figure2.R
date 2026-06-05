@@ -2,6 +2,7 @@
 source("scripts/cleaned/source2.R")
 source("scripts/cleaned/power_law.R")
 
+# Load Packages
 library(librarian)
 shelf(lme4, 
       tidyverse, 
@@ -10,8 +11,8 @@ shelf(lme4,
 
 # MAKE PLOTS
 # After dose 2 plot
-three_dose_powerlaw_plot <- ggplot() +
-  geom_point(data = three_dose_waning_svnt, 
+two_dose_powerlaw_plot <- ggplot() +
+  geom_point(data = two_dose_waning_svnt, 
              aes(x = days_since_dose1, y = weight, color = permutation),
              size = 3.5, alpha = 0.5) +
   geom_ribbon(data = dose2_marginal,
@@ -46,8 +47,8 @@ three_dose_powerlaw_plot <- ggplot() +
   )
 
 # After dose 3 plot
-four_dose_powerlaw_plot <- ggplot() +
-  geom_point(data = four_dose_waning_svnt, 
+three_dose_powerlaw_plot <- ggplot() +
+  geom_point(data = three_dose_waning_svnt, 
              aes(x = days_since_dose1, y = weight, color = permutation),
              size = 3.5, alpha = 0.5) +
   geom_ribbon(data = dose3_marginal %>% filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1")),
@@ -82,7 +83,7 @@ four_dose_powerlaw_plot <- ggplot() +
   )
 
 # Combine plots
-figure_2_powerlaw <- (three_dose_powerlaw_plot + four_dose_powerlaw_plot) +
+figure_2_powerlaw <- (two_dose_powerlaw_plot + three_dose_powerlaw_plot) +
   plot_layout(ncol = 2) + 
   plot_annotation(tag_levels = "A")
 

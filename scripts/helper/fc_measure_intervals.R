@@ -1,5 +1,3 @@
-library(dplyr)
-
 get_measurements_in_interval <- function(data, first_dose_col, second_dose_col, weight_type = "elisa", permutation_col) {
   #Ensure the specified columns are present
   if (!all(c(first_dose_col, second_dose_col, permutation_col) %in% names(data))) {
@@ -49,6 +47,11 @@ get_measurements_in_interval <- function(data, first_dose_col, second_dose_col, 
                                 !is.na(data$posdate_p2) & data$posdate_p2 >= data[[first_dose_col]] & data$posdate_p2 <= data[[second_dose_col]] |
                                 !is.na(data$posdate_p3) & data$posdate_p3 >= data[[first_dose_col]] & data$posdate_p3 <= data[[second_dose_col]] |
                                 !is.na(data$posdate_p4) & data$posdate_p4 >= data[[first_dose_col]] & data$posdate_p4 <= data[[second_dose_col]]])
+  result <- result %>%
+    filter(days_since_dose1 >= 30)
+  
+  result <- result %>%
+    filter(weight >= 1) 
   
   return(result)
 }

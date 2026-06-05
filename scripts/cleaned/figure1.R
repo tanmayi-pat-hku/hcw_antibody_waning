@@ -24,7 +24,6 @@ community_cohort_elisa_plot <- ggplot(community_cohort_elisa_data, aes(x = group
         axis.line = element_line(size = 0.5, color = "black"))
 
 #ELISA Baseline Graph 
-
 baseline_elisa$baseline_value <- as.numeric(baseline_elisa$baseline_value)
 
 elisa_baseline_wt <- ggplot() +

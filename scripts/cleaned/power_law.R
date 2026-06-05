@@ -24,8 +24,8 @@ source("scripts/helper/fc_power_law_bootstrap.R")
 
 
 # Post-vaccinatation: Run adjusted models with interactions
-after_dose2_adj <- fit_powerlaw_with_boot_adj(three_dose_waning_svnt, n_boot = 500)
-after_dose3_adj <- fit_powerlaw_with_boot_adj(four_dose_waning_svnt, n_boot = 500)
+after_dose2_adj <- fit_powerlaw_with_boot_adj(two_dose_waning_svnt, n_boot = 500)
+after_dose3_adj <- fit_powerlaw_with_boot_adj(three_dose_waning_svnt, n_boot = 500)
 
 
 # CREATE MARGINAL PREDICTIONS FOR PLOTS across age bins and sex 
