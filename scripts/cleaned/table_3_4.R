@@ -1,16 +1,23 @@
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
+# Source Functions
 source("scripts/cleaned/figure2.R")
-source("scripts/cleaned/power_law.R")
-source("scripts/helper/fc_power_law_bootstrap.R")
+#source("output/scripts/cleaned/figure2.R") #For Wey Wen Dropbox
+source("scripts/cleaned/power_law.R") 
+#source("output/scripts/cleaned/power_law.R") #For Wey Wen Dropbox
+source("scripts/helper/fc_power_law_bootstrap.R") 
+#source("output/scripts/helper/fc_power_law_bootstrap.R") #For Wey Wen Dropbox
 
 # Table 3 
 
 # Get sample sizes
 sample_sizes <- bind_rows(
-  three_dose_waning_svnt %>% 
+  two_dose_waning_svnt %>% 
     group_by(permutation) %>% 
     summarise(n = n_distinct(id)) %>%
     mutate(Dose = "After dose 2"),
-  four_dose_waning_svnt %>% 
+  three_dose_waning_svnt %>% 
     group_by(permutation) %>% 
     summarise(n = n_distinct(id)) %>%
     mutate(Dose = "After dose 3")

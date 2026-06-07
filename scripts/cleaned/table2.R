@@ -1,7 +1,14 @@
 #Boost Analysis Tests
-#source code 
+
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
+# Source code 
 source("scripts/cleaned/source1.R")
+#source("output/scripts/cleaned/source1.R") #For Wey Wen Dropbox
 source("scripts/helper/fc_group_tests.R")
+#source("output/scripts/helper/fc_group_tests.R") #For Wey Wen Dropbox
+
 #####################################
 
 boost_results_table <- bind_rows(

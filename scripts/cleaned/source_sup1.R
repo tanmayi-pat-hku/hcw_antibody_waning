@@ -1,8 +1,14 @@
 #Code Organization
 #Supplementary Figure: Boost Analysis Linked by Dose
 
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
 # Source Code 
 source("scripts/cleaned/source1.R")
+#source("output/scripts/cleaned/source1.R") #For Wey Wen Dropbox
+source("scripts/helper/fc_process_dose_data.R")
+#source("output/scripts/helper/fc_process_dose_data.R") #For Wey Wen Dropbox
 
 #########################################
 
@@ -20,9 +26,6 @@ shade_df_3 <- tibble(
   xmax = c(1.5, 2.5, 3.5, 4.5),
   alpha = c(0.02, 0.05, 0.08, 0.11)
 )
-
-#Source Function 
-source("scripts/helper/fc_process_dose_data.R")
 
 #FORM NEEDED DATASETS
 

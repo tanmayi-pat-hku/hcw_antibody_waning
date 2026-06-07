@@ -1,4 +1,9 @@
+#Set Working Directory (For Wey Wen Lim)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
+
 source("scripts/cleaned/source2.R")
+#source("output/scripts/cleaned/source2.R") #For Wey Wen Dropbox
 
 library(librarian)
 shelf(lme4, 
@@ -45,8 +50,8 @@ dose3_age <- after_dose3_adj$predictions %>%
 age_colors <- c("21-35" = "#2CA02C", "35-55" = "#FF7F0E", "55+" = "#D62728")
 
 # After dose 2 plot - faceted by vaccine regimen
-three_dose_powerlaw_age_plot <- ggplot() +
-  geom_point(data = three_dose_waning_svnt, 
+two_dose_powerlaw_age_plot <- ggplot() +
+  geom_point(data = two_dose_waning_svnt, 
              aes(x = days_since_dose1, y = weight),
              color = "gray70", size = 1.5, alpha = 0.3) +
   geom_ribbon(data = dose2_age %>% filter(permutation %in% c("1-1", "4-4")),
@@ -80,8 +85,8 @@ three_dose_powerlaw_age_plot <- ggplot() +
   )
 
 # After dose 3 plot - faceted by vaccine regimen
-four_dose_powerlaw_age_plot <- ggplot() +
-  geom_point(data = four_dose_waning_svnt, 
+three_dose_powerlaw_age_plot <- ggplot() +
+  geom_point(data = three_dose_waning_svnt, 
              aes(x = days_since_dose1, y = weight),
              color = "gray70", size = 1.5, alpha = 0.3) +
   geom_ribbon(data = dose3_age %>% filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1")),
@@ -117,7 +122,7 @@ four_dose_powerlaw_age_plot <- ggplot() +
   )
 
 # Combine plots
-figure_2_powerlaw_age <- (three_dose_powerlaw_age_plot / four_dose_powerlaw_age_plot) +
+figure_2_powerlaw_age <- (two_dose_powerlaw_age_plot / three_dose_powerlaw_age_plot) +
   plot_layout(ncol = 1) + 
   plot_annotation(tag_levels = "A")
 

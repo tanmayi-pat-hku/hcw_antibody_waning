@@ -1,5 +1,10 @@
+#Set Working Directory for Stand alone (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
 source("scripts/cleaned/source2.R")
+#source("output/scripts/cleaned/source2.R") #For Wey Wen Dropbox
 source("scripts/helper/fc_power_law_bootstrap.R")
+#source("output/scripts/helper/fc_power_law_bootstrap.R") #For Wey Wen Dropbox
 
 # Formula: 
 #   log_weight ~ log_days * permutation + male + age_bin + 
@@ -24,15 +29,20 @@ source("scripts/helper/fc_power_law_bootstrap.R")
 
 
 # Post-vaccinatation: Run adjusted models with interactions
-after_dose2_adj <- fit_powerlaw_with_boot_adj(two_dose_waning_svnt, n_boot = 500)
-after_dose3_adj <- fit_powerlaw_with_boot_adj(three_dose_waning_svnt, n_boot = 500)
-
+# Fit the power‑law model to the post‑vaccination waning datasets.
+after_dose2_adj <- fit_powerlaw_with_boot_adj(two_dose_waning_svnt, n_boot = 500, time_offset = 0.01)
+after_dose3_adj <- fit_powerlaw_with_boot_adj(three_dose_waning_svnt, n_boot = 500, time_offset = 0.01)
 
 # CREATE MARGINAL PREDICTIONS FOR PLOTS across age bins and sex 
-dose2_marginal <- create_marginal_predictions(after_dose2_adj)
-dose3_marginal <- create_marginal_predictions(after_dose3_adj)
+# Marginal predictions are population‑averaged curves that account for the
+# observed distribution of sex and age in the data.  The time_offset MUST
+# match the one used in the model fitting.
+dose2_marginal <- create_marginal_predictions(after_dose2_adj, time_offset = 0.01)
+dose3_marginal <- create_marginal_predictions(after_dose3_adj, time_offset = 0.01)
 
 #Post-Infection: adjusted models with interactions
+# No permutation term here – only one group (post‑infection).
+# Uses a fixed 0.01 offset internally.
 post_infection_adj <- fit_powerlaw_infection(post_infection_svnt, n_boot = 500) 
 
 # CREATE MARGINAL PREDICTIONS FOR PLOTS across age bins and sex 

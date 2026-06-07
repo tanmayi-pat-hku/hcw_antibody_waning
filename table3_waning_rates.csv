@@ -1,0 +1,6 @@
+"Dose","Group (n)","Waning Rate","95% CI","% at 90 days","% at 180 days","Days to 50% of day 1","Significant (vs reference)"
+"After dose 2","1-1 (n=806)",-0.28,"[-0.31, -0.25]",28.2,23.2,"12","Ref"
+"After dose 2","4-4 (n=133)",-0.47,"[-0.56, -0.36]",12.2,8.8,"4","Yes"
+"After dose 3","1-1-1 (n=143)",-0.02,"[-0.05, 0]",90.3,88.9,"Stable (>500 days)","Ref"
+"After dose 3","4-4-1 (n=48)",-0.01,"[-0.05, 0.05]",97.4,97,"Stable (>500 days)","No"
+"After dose 3","4-4-4 (n=54)",-0.37,"[-0.44, -0.31]",18.9,14.7,"7","Yes"

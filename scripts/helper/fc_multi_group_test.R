@@ -92,7 +92,7 @@ multi_group_test <- function(raw_data, perm_col, value_col, groups, min_n = 5) {
         Z = round(Z, 3),
         p_adj = round(`P.adj`, 6),
         p_fmt = format(p_adj, scientific = TRUE, digits = 3),
-        sig = case_when(p_adj < 0.001 ~ "***", p_adj < 0.01 ~ "**", p_adj < 0.05 ~ "*", TRUE ~ "")
+        sig = case_when(p_adj < 0.001 ~ "***", p_adj < 0.01 ~_ "**", p_adj < 0.05 ~ "*", TRUE ~ "")
       )
     
     cat(sprintf("Kruskal-Wallis: χ² = %.3f, p = %.3g %s\n\n", kw_res$statistic, global_p,

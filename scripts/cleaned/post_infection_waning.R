@@ -1,5 +1,11 @@
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning") 
+
+
 source("scripts/cleaned/power_law.R")
+#source("output/scripts/cleaned/power_law.R") #For Wey Wen Dropbox
 source("scripts/cleaned/figure2.R")
+#source("output/scripts/cleaned/figure2.R") #For Wey Wen Dropbox
 
 library(librarian)
 shelf(lme4, 
@@ -45,11 +51,11 @@ geom_jitter(data = post_infection_svnt,
             aes(x = days_since_dose1, y = weight),
             color = "#CD5C5C", size = 2, alpha = 0.3, width = 2) +
   
-  geom_jitter(data = three_dose_waning_svnt %>% filter(permutation == "1-1"),
+  geom_jitter(data = two_dose_waning_svnt %>% filter(permutation == "1-1"),
               aes(x = days_since_dose1, y = weight),
               color = "#1F77B4", size = 2, alpha = 0.3, width = 2) +
   
-  geom_jitter(data = three_dose_waning_svnt %>% filter(permutation == "4-4"),
+  geom_jitter(data = two_dose_waning_svnt %>% filter(permutation == "4-4"),
               aes(x = days_since_dose1, y = weight),
               color = "#FF7F0E", size = 2, alpha = 0.3, width = 2) +
   
@@ -126,15 +132,15 @@ geom_jitter(data = post_infection_svnt,
             aes(x = days_since_dose1, y = weight),
             color = "#CD5C5C", size = 2, alpha = 0.3, width = 2) +
   
-  geom_jitter(data = four_dose_waning_svnt %>% filter(permutation == "1-1-1"),
+  geom_jitter(data = three_dose_waning_svnt %>% filter(permutation == "1-1-1"),
               aes(x = days_since_dose1, y = weight),
               color = "#1F77B4", size = 2, alpha = 0.3, width = 2) +
   
-  geom_jitter(data = four_dose_waning_svnt %>% filter(permutation == "4-4-4"),
+  geom_jitter(data = three_dose_waning_svnt %>% filter(permutation == "4-4-4"),
               aes(x = days_since_dose1, y = weight),
               color = "#FF7F0E", size = 2, alpha = 0.3, width = 2) +
   
-  geom_jitter(data = four_dose_waning_svnt %>% filter(permutation == "4-4-1"),
+  geom_jitter(data = three_dose_waning_svnt %>% filter(permutation == "4-4-1"),
               aes(x = days_since_dose1, y = weight),
               color = "darkgreen", size = 2, alpha = 0.3, width = 2) +
   

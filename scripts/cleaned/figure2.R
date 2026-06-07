@@ -1,6 +1,11 @@
+#Set Working Directory for Stand alone (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
 # Power law Waning 
 source("scripts/cleaned/source2.R")
+#source("output/scripts/cleaned/source2.R") #For Wey Wen Dropbox
 source("scripts/cleaned/power_law.R")
+#source("output/scripts/cleaned/power_law.R") #For Wey Wen Dropbox
 
 # Load Packages
 library(librarian)

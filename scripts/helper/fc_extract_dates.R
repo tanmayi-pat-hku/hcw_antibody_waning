@@ -49,7 +49,7 @@ extract_valid_dates_with_weights <- function(data) {
     filter(
       !is.na(valid_date) & valid_date > (earliest_posdate + 30) & valid_date <= (earliest_posdate + 60)
     )
-  
+  .
   return(long_data %>% select(valid_date, rX_elisa_wt, rX_svnt_wt))
 }
 

@@ -1,6 +1,13 @@
+
+#Set Working Directory for Stand alone (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
+
 # Power law Waning 
 source("scripts/cleaned/source2.R")
+#source("output/scripts/cleaned/source2.R") #For Wey Wen Dropbox
 source("scripts/cleaned/power_law.R")
+#source("output/scripts/cleaned/power_law.R") #For Wey Wen Dropbox
 
 # Load Packages
 library(librarian)
@@ -31,14 +38,14 @@ labels_dose3 <- data.frame(
 # After dose 2 plot
 two_dose_powerlaw_summary <- ggplot() +
   geom_line(
-    data = dose2_marginal %>% filter(days_since_dose1 >= 30, days_since_dose1 <= 360),
+    data = dose2_marginal %>% filter(days_since_dose1 >= 0, days_since_dose1 <= 360),
     aes(x = days_since_dose1, y = pred_weight, color = permutation, group = permutation),
     linewidth = 1.2, show.legend = FALSE
   ) +
   geom_point(
-    data = two_dose_waning_svnt %>% filter(days_since_dose1 >= 30, days_since_dose1 <= 360),
+    data = two_dose_waning_svnt %>% filter(days_since_dose1 >= 0, days_since_dose1 <= 360),
     aes(x = days_since_dose1, y = weight, color = permutation),
-    size = 3.5, alpha = 0.5
+    size = 3.5, alpha = 0.35
   ) +
   geom_text(
     data = labels_dose2,
@@ -49,11 +56,11 @@ two_dose_powerlaw_summary <- ggplot() +
   ) +
   scale_color_manual(
     name = "Vaccination history",
-    values = c("1-1" = "#00468B33", "4-4" = "#AD002A33"),
+    values = c("1-1" = "#00468B", "4-4" = "#AD002A"),
     labels = c("1-1" = "Homologous, mRNA", "4-4" = "Homologous, inactivated")
   ) +
   scale_fill_manual(
-    values = c("1-1" = "#00468B33", "4-4" = "#AD002A33")
+    values = c("1-1" = "#00468B", "4-4" = "#AD002A")
   ) +
   scale_x_continuous(
     breaks = c(0, seq(30, 360, by = 30)),
@@ -74,8 +81,8 @@ two_dose_powerlaw_summary <- ggplot() +
   theme(
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
     axis.title = element_text(face = "bold", size = 15),
-    axis.text.x = element_text(face = "bold", size = 13, color = "black"),
-    axis.text.y = element_text(face = "bold", size = 13, color = "black"),
+    axis.text.x = element_text(face = "plain", size = 13, color = "black"),
+    axis.text.y = element_text(face = "plain", size = 13, color = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     legend.position = "none",
@@ -88,13 +95,13 @@ two_dose_powerlaw_summary <- ggplot() +
 # After dose 3 plot
 three_dose_powerlaw_plot_summary <- ggplot() +
   geom_point(
-    data = three_dose_waning_svnt %>% filter(days_since_dose1 >= 30, days_since_dose1 <= 360),
+    data = three_dose_waning_svnt %>% filter(days_since_dose1 >= 0, days_since_dose1 <= 360),
     aes(x = days_since_dose1, y = weight, color = permutation),
-    size = 3.5, alpha = 0.5
+    size = 3.5, alpha = 0.35
   ) +
   geom_line(
     data = dose3_marginal %>% filter(permutation %in% c("4-4-4", "1-1-1", "4-4-1"),
-                                     days_since_dose1 >= 30, days_since_dose1 <= 360),
+                                     days_since_dose1 >= 0, days_since_dose1 <= 360),
     aes(x = days_since_dose1, y = pred_weight, color = permutation, group = permutation),
     linewidth = 1.2, show.legend = FALSE
   ) +
@@ -107,11 +114,11 @@ three_dose_powerlaw_plot_summary <- ggplot() +
   ) +
   scale_color_manual(
     name = "Vaccination history",
-    values = c("1-1-1" = "#00468B33", "4-4-4" = "#AD002A33", "4-4-1" = "#925E9F33"),
+    values = c("1-1-1" = "#00468B", "4-4-4" = "#AD002A", "4-4-1" = "#925E9F"),
     labels = c("1-1-1" = "Homologous, mRNA", "4-4-4" = "Homologous, inactivated", "4-4-1" = "Heterologous")
   ) +
   scale_fill_manual(
-    values = c("1-1-1" = "#00468B33", "4-4-4" = "#AD002A33", "4-4-1" = "#925E9F33")
+    values = c("1-1-1" = "#00468B", "4-4-4" = "#AD002A", "4-4-1" = "#925E9F")
   ) +
   scale_x_continuous(
     breaks = c(0, seq(30, 360, by = 30)),
@@ -132,8 +139,8 @@ three_dose_powerlaw_plot_summary <- ggplot() +
   theme(
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
     axis.title = element_text(face = "bold", size = 15),
-    axis.text.x = element_text(face = "bold", size = 13, color = "black"),
-    axis.text.y = element_text(face = "bold", size = 13, color = "black"),
+    axis.text.x = element_text(face = "plain", size = 13, color = "black"),
+    axis.text.y = element_text(face = "plain", size = 13, color = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     legend.position = "none",

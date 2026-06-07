@@ -1,8 +1,11 @@
-
 #Supplementary Figure: Boost Analysis Linked by Dose
+
+# Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
 
 # Source Code 
 source("scripts/cleaned/source_sup1.R")
+#source("output/scripts/cleaned/source_sup1.R") #For Wey Wen Dropbox
 
 #Two Dose Plot ELISA 
 elisa_wt_time_plot_2 <- ggplot() +

@@ -1,6 +1,13 @@
-source("scripts/helper/fc_demographic.R")
-source("scripts/cleaned/source1.R")
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
 
+# Source Code
+source("scripts/helper/fc_demographic.R")
+#source("output/scripts/helper/fc_demographic.R") ##For Wey Wen Dropbox
+source("scripts/cleaned/source1.R")
+#source("output/scripts/cleaned/source1.R") #For Wey Wen Dropbox
+
+#Load Packages 
 library(librarian)
 shelf(tidyverse)
 

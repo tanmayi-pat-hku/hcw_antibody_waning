@@ -1,10 +1,15 @@
+#Set Working Directory (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
+#Source Code
 source("scripts/cleaned/power_law.R")
+#source("output/scripts/cleaned/power_law.R") #For Wey Wen Dropbox
 
 # Simple AIC/BIC comparison between linear, power law, and exponential models
 # Including age and sex adjustments
 
 # Prepare data with log transformations
-data_dose2 <- three_dose_waning_svnt %>%
+data_dose2 <- two_dose_waning_svnt %>%
   mutate(
     log_days = log(days_since_dose1 + 0.01),
     log_weight = log(weight + 0.01),
@@ -13,7 +18,7 @@ data_dose2 <- three_dose_waning_svnt %>%
     age_bin = as.factor(age_bin)
   )
 
-data_dose3 <- four_dose_waning_svnt %>%
+data_dose3 <- three_dose_waning_svnt %>%
   mutate(
     log_days = log(days_since_dose1 + 0.01),
     log_weight = log(weight + 0.01),

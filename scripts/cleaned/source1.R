@@ -1,6 +1,9 @@
 #Code Organization
 ##Original Data Cleaning and Organization 
 
+#Set Working Directory for Stand alone (For Wey Wen Dropbox)
+#setwd("~/Desktop/Shared COVID HCW antibody waning/2025_10_hcw_abwaning")
+
 #Boost Analysis Workflow 
 
 #Load Packages 
@@ -17,9 +20,24 @@ shelf(dplyr,
       emmeans
 )
 
+select <- dplyr::select
+
+# Source
+#Source Baseline Value Measurements Function 
+source("scripts/helper/fc_get_baselines.R")
+#source("output/scripts/helper/fc_get_baselines.R") #For Wey Wen Dropbox
+
+#Source Antibody Value Measurement Function
+source("scripts/helper/fc_vaccine_perm.R")
+#source("output/scripts/helper/fc_vaccine_perm.R") #For Wey Wen Dropbox
 
 #Load Data
 data <- read.csv("./data/20251007_hcw_posvax_abwaning.csv")
+
+# Convert all columns with "date" in their name to proper Date objects
+# Create permutation strings that describe the sequence of vaccine brands
+# These strings are used to group individuals by vaccination history.
+
 data <- data %>%
   mutate(across(contains("date"), \(x) as.Date(x, format = "%Y-%m-%d"))) %>%
   mutate(
@@ -30,10 +48,10 @@ data <- data %>%
     five_dose_permutation = paste(dose1_brand, dose2_brand, dose3_brand, dose4_brand, dose5_brand, sep = "-")
   )
 
+# Load community data
 community_data <- read.csv("./data/2021_community_elisa_sVNT.csv")
 
 # Create age/sex group bins
-
 data <- data %>%
   mutate(
     age_bin = case_when(
@@ -60,28 +78,34 @@ four_labels_svnt <- c("1-1-1-1" =" B-B-B-B", "4-4-1-1" =" S-S-B-B", "4-4-4-4" ="
 #filters for NA in i1_elisa_wt 
 #calculates median ELISA post infection value for crossbar 
 
-# Prepare the cohort and community datasets
+# Prepare the cohort and community datasets: Post Infection Analysis
+
+# Cohort: ELISA
 cohort_data_elisa <- data %>%
   filter(!is.na(i1_elisa_wt)) %>%
   mutate(group = "Cohort") %>%
   select(value = i1_elisa_wt, group)
 
+# Cohort: sVNT
 cohort_data_svnt <- data %>%
   filter(!is.na(i1_svnt_wt)) %>%
   mutate(group = "Cohort") %>%
   select(value = i1_svnt_wt, group)
 
+# Community: ELISA
 community_data_elisa <- community_data %>%
   filter(!is.na(elisa)) %>%
   mutate(group = "Community") %>%
   select(value = elisa, group)
 
+# Community: sVNT
 community_data_svnt <- community_data %>%
   filter(!is.na(sVNT)) %>%
   mutate(group = "Community") %>%
   select(value = sVNT, group)
 
 # Combine the datasets
+#Note: Community Data is Temporarily filtered Out
 community_cohort_elisa_data <- bind_rows(cohort_data_elisa, community_data_elisa) %>% 
   filter(group == "Cohort")
 
@@ -128,13 +152,11 @@ five_dose_data <- data %>%
 
 #Source Helper Functions that calculate appropriate antibody titer measurements (sVNT and ELISA) and baseline value measurements 
 
-#Source Baseline Value Measurements Function 
-source("scripts/helper/fc_get_baselines.R")
-
 #Calculate Baseline Values for ELISA AND sVNT 
 baseline_elisa <- get_baselines(data, "elisa_wt")  
 baseline_svnt <- get_baselines(data, "svnt_wt")    
 
+# Ensure baseline values are numeric
 baseline_elisa$baseline_value <- as.numeric(baseline_elisa$baseline_value)
 baseline_svnt$baseline_value <- as.numeric(baseline_svnt$baseline_value)
 
@@ -143,16 +165,13 @@ median_baseline_elisa <- baseline_elisa %>%
   group_by(dose1_brand) %>%
   summarise(median = median(baseline_value, na.rm = TRUE), .groups = 'drop')
 
+# Median baseline level per first‑dose brand.
 median_baseline_svnt <- baseline_svnt %>%
   group_by(dose1_brand) %>%
   summarise(median = median(baseline_value, na.rm = TRUE), .groups = 'drop')
 
 
 #########################################
-
-#Source Antibody Value Measurement Function
-source("scripts/helper/fc_vaccine_perm.R")
-
 
 # ELISA VALUES
 
