@@ -12,7 +12,8 @@ library(librarian)
 shelf(lme4, 
       tidyverse, 
       patchwork,
-      boot)
+      boot,
+      dplyr)
 
 # MAKE PLOTS
 # After dose 2 plot
